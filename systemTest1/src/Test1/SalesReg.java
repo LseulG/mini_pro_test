@@ -39,7 +39,7 @@ public class SalesReg extends JFrame implements ActionListener {
 
 class SalesReg_p extends JPanel{
 	
-	private JTable firstTab, secTab, thrTab;
+	JTable firstTab, secTab, thrTab;
 	DefaultTableModel firstTabModel, secTabModel, thrTabModel;
 	
 	public SalesReg_p() {

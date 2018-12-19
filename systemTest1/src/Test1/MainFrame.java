@@ -13,6 +13,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.border.EmptyBorder;
+
+
 import javax.swing.JTextField;
 
 public class MainFrame extends JFrame implements ActionListener{
@@ -23,8 +25,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	private JTextField txtMainPage;
 	
 	public MainFrame() {
-		
-				
+					
 		initMenu(); // 메뉴바 가져오기
 		
 
@@ -38,58 +39,58 @@ public class MainFrame extends JFrame implements ActionListener{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 650, 450);
 		
-		JMenuBar menuBar = new JMenuBar();
-		setJMenuBar(menuBar);
-		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(card); 
+
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
 		
 		// action_1
 		JMenu mMenu = new JMenu("메뉴");
 		menuBar.add(mMenu);
 		
-		mLogout = new JMenuItem("로그아웃");
 		mLogout.addActionListener(this);
+		mLogout = new JMenuItem("로그아웃");
 		mMenu.add(mLogout);
 		
 		JSeparator separator = new JSeparator();
 		mMenu.add(separator);
 		
-		mNewProdReg = new JMenuItem("신상품 등록");
 		mNewProdReg.addActionListener(this);
+		mNewProdReg = new JMenuItem("신상품 등록");
 		mMenu.add(mNewProdReg);
 		
-		mProdInfoModify = new JMenuItem("상품정보 수정");
 		mProdInfoModify.addActionListener(this);
+		mProdInfoModify = new JMenuItem("상품정보 수정");
 		mMenu.add(mProdInfoModify);
 		
-		mAccount = new JMenuItem("계정 조회/생성");
 		mAccount.addActionListener(this);
+		mAccount = new JMenuItem("계정 조회/생성");
 		mMenu.add(mAccount);
 		
 		// action_2
 		JMenu mSalesmenu = new JMenu("판매관리");
 		menuBar.add(mSalesmenu);
 		
+		mSalesReg.addActionListener(this);
 		mSalesReg = new JMenuItem("판매등록");
-		//mSalesReg.addActionListener(this);
 		mSalesmenu.add(mSalesReg);
 		
-		mSalesStatus = new JMenuItem("판매현황");
 		mSalesStatus.addActionListener(this);
+		mSalesStatus = new JMenuItem("판매현황");
 		mSalesmenu.add(mSalesStatus);
 		
 		// action_3
 		JMenu mStockmenu = new JMenu("재고관리");
 		menuBar.add(mStockmenu);
 		
-		mStock = new JMenuItem("재고조회");
 		mStock.addActionListener(this);
+		mStock = new JMenuItem("재고조회");
 		mStockmenu.add(mStock);
 		
 		contentPane.add("mSalesReg", new SalesReg());
-		//contentPane.add("mSalesStatus", new SalesReg());
+		
 		add(contentPane);
 		setVisible(true);
 				
@@ -120,5 +121,8 @@ public class MainFrame extends JFrame implements ActionListener{
 		}
 	}
 	
+	public static void main(String[] args) {
+		new MainFrame();
+	}
 	
 }
