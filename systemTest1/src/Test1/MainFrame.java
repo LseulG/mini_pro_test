@@ -69,6 +69,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		// contentPane.add("패널별명", new 패널());
 		contentPane.add("SalesReg", new SalesReg());
 		contentPane.add("SalesStatus", new SalesStatus());
+		contentPane.add("Stock", new StockSearch());
 
 		add(contentPane);
 
@@ -88,6 +89,8 @@ public class MainFrame extends JFrame implements ActionListener{
 			card.show(contentPane, "SalesReg");
 		} else if (e.getSource() == mSalesStatus) {
 			card.show(contentPane, "SalesStatus");
+		} else if (e.getSource() == mStock) {
+			card.show(contentPane, "Stock");
 		} else if (e.getSource() == mLogout) {
 			int result;
 			String[] option = {"예", "아니오"};
