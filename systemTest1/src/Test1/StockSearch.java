@@ -21,9 +21,9 @@ import javax.swing.JTextField;
 
 public class StockSearch extends JPanel {
 	JLabel lab;
-	DefaultTableModel firstTabModel, secTabModel;
-	JTable firstTab, secTab;
-	JScrollPane firstSc, secSc;
+	DefaultTableModel firstTabModel;
+	JTable firstTab;
+	JScrollPane firstSc;
 	private JRadioButton[] rdbtn = new JRadioButton[2];
 	private JButton btnSearch;
 	String[] radioText = { "매장별", "사이즈별" };
@@ -82,37 +82,23 @@ public class StockSearch extends JPanel {
 		p2.add(btnSearch);
 
 		// 3
-		
-//		String firstTabName[] = { "품 번", "판매단가" };
-//		Object firstData[][] = { { "181001", "59,000" } };
-//		firstTabModel = new DefaultTableModel(firstData, firstTabName);
-//		firstTab = new JTable(firstTabModel);
-//		firstSc = new JScrollPane(firstTab);
-//		firstSc.setPreferredSize(new Dimension(450, 100));
-//		add(firstSc);
-
-		// 4
-		String secTabName[] = { "색상", "사이즈", "매장코드", "매장명", "전화번호", "재고" };
-		Object secData[][] = { { "BK", "S", "H0001", "본사창고", "031-777-1111", "5" },
+		String firstTabName[] = { "색상", "사이즈", "매장코드", "매장명", "전화번호", "재고" };
+		Object firstData[][] = { { "BK", "S", "H0001", "본사창고", "031-777-1111", "5" },
 				{ "BK", "M", "H0001", "본사창고", "031-777-1111", "4" },
 				{ "BK", "S", "S3210", "뉴코아광명", "010-8888-8888", "3" } };
-		secTabModel = new DefaultTableModel(secData, secTabName);
-		secTab = new JTable(secTabModel);
-		secSc = new JScrollPane(secTab);
-		add(secSc);
+		firstTabModel = new DefaultTableModel(firstData, firstTabName);
+		firstTab = new JTable(firstTabModel);
+		firstSc = new JScrollPane(firstTab);
+		add(firstSc);
 
 		// table center align
 		DefaultTableCellRenderer tCellRenderer = new DefaultTableCellRenderer();
 		tCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-		//TableColumnModel t1ColModel = firstTab.getColumnModel();
-		TableColumnModel t2ColModel = secTab.getColumnModel();
+		TableColumnModel t1ColModel = firstTab.getColumnModel();
 
-		//for (int i = 0; i < t1ColModel.getColumnCount(); i++)
-		//	t1ColModel.getColumn(i).setCellRenderer(tCellRenderer);
-
-		for (int i = 0; i < t2ColModel.getColumnCount(); i++)
-			t2ColModel.getColumn(i).setCellRenderer(tCellRenderer);
+		for (int i = 0; i < t1ColModel.getColumnCount(); i++)
+			t1ColModel.getColumn(i).setCellRenderer(tCellRenderer);
 	}
 
 	// radio listener

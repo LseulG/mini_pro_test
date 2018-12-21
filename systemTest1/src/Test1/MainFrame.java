@@ -17,7 +17,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	JMenu mSalesmenu, mStockmenu,mAdmMenu,mLogoutMenu;
 	JMenuItem mSalesReg, mSalesStatus,mStock, mLogout,mNewProdReg,mProdInfoModify,mAccount;
 	CardLayout card = new CardLayout();
-	
+
 	public MainFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 650, 450);
@@ -65,10 +65,14 @@ public class MainFrame extends JFrame implements ActionListener{
 		mLogout = new JMenuItem("로그아웃");
 		mLogoutMenu.add(mLogout);
 
+
 		// contentPane.add("패널별명", new 패널());
-		contentPane.add("SalesReg", new SalesReg());
-		contentPane.add("SalesStatus", new SalesStatus());
-		contentPane.add("Stock", new StockSearch());
+		contentPane.add("SalesReg", new SalesReg()); //판매등록
+		contentPane.add("SalesStatus", new SalesStatus()); //판매현황
+		contentPane.add("Stock", new StockSearch()); //재고조회
+		contentPane.add("NewProdReg", new NewProReg()); //신상품등록
+		contentPane.add("ProdInfoModify", new ProdInfoModify()); // 상품정보 수정 
+		contentPane.add("Account", new AccountLookupCreate()); // 계정조희 및 생성
 
 		add(contentPane);
 
@@ -84,13 +88,20 @@ public class MainFrame extends JFrame implements ActionListener{
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == mSalesReg) {
+		if (e.getSource() ==mSalesReg) {
 			card.show(contentPane, "SalesReg");
 		} else if (e.getSource() == mSalesStatus) {
 			card.show(contentPane, "SalesStatus");
 		} else if (e.getSource() == mStock) {
 			card.show(contentPane, "Stock");
-		} else if (e.getSource() == mLogout) {
+		} else if (e.getSource() == mNewProdReg) {
+			card.show(contentPane, "NewProdReg");
+		} else if(e.getSource() == mProdInfoModify) {
+			card.show(contentPane, "ProdInfoModify");
+		} else if (e.getSource() == mAccount) {
+			card.show(contentPane, "Account");
+		}
+		else if (e.getSource() == mLogout) {
 			int result;
 			String[] option = {"예", "아니오"};
 			result = JOptionPane.showOptionDialog(this, "로그아웃 하시겠습니까?", "logout", 
