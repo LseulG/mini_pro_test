@@ -2,9 +2,12 @@ package Test1;
 
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -13,21 +16,23 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
-import javax.swing.JComboBox;
 
-public class SalesStatus extends JPanel {
+public class SalesStatus extends JPanel implements ActionListener{
 	JLabel lab, dateLab, totalLab;
 	DefaultTableModel firstTabModel;
 	JTable firstTab;
 	JScrollPane firstSc;
 	private JComboBox<String> dateComboBox;
 	private JButton btnSearch;
+	JPanel p2;
 
 	String date[] = { "2018-09", "2018-10", "2018-11", "2018-12" };
-
+	
+	private JButton btnEx;
+	
 	public SalesStatus() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
+		
 		// 1
 		JPanel p1 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) p1.getLayout();
@@ -38,9 +43,9 @@ public class SalesStatus extends JPanel {
 		lab = new JLabel("판매현황");
 		p1.add(lab);
 		lab.setFont(new Font("굴림", Font.PLAIN, 18));
-
+		 
 		// 2
-		JPanel p2 = new JPanel();
+		 p2 = new JPanel();
 		FlowLayout flowLayout_2 = (FlowLayout) p2.getLayout();
 		flowLayout_2.setAlignment(FlowLayout.RIGHT);
 		add(p2);
@@ -54,6 +59,11 @@ public class SalesStatus extends JPanel {
 
 		btnSearch = new JButton("조회");
 		p2.add(btnSearch);
+		
+		// 임시버튼
+		btnEx = new JButton("ex");
+		btnEx.addActionListener(this);
+		p2.add(btnEx);
 
 		// 3
 		String firstTabName[] = { "일자", "요일", "수량", "단가금액", "실판매금액", "누적금액(실판매)" };
@@ -88,5 +98,13 @@ public class SalesStatus extends JPanel {
 
 		for (int i = 0; i < t1ColModel.getColumnCount(); i++)
 			t1ColModel.getColumn(i).setCellRenderer(tCellRenderer);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource() == btnEx) {
+			OpenStatus op = new OpenStatus();
+		}
 	}
 }

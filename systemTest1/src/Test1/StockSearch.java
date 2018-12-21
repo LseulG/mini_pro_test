@@ -1,6 +1,5 @@
 package Test1;
 
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
@@ -18,6 +17,7 @@ import javax.swing.JRadioButton;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JTextField;
 
 public class StockSearch extends JPanel {
 	JLabel lab;
@@ -27,9 +27,8 @@ public class StockSearch extends JPanel {
 	private JRadioButton[] rdbtn = new JRadioButton[2];
 	private JButton btnSearch;
 	String[] radioText = { "매장별", "사이즈별" };
-	private JRadioButton rdbtnH;
-	private JRadioButton rdbtnJj;
-	private JRadioButton rdbtnKk;
+	private JLabel lblCode, lblPrice;
+	private JTextField txtCode, txtPrice;
 
 	public StockSearch() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -50,7 +49,22 @@ public class StockSearch extends JPanel {
 		FlowLayout flowLayout_1 = (FlowLayout) p2.getLayout();
 		flowLayout_1.setAlignment(FlowLayout.RIGHT);
 		add(p2);
-		// radio*
+		
+		lblCode = new JLabel("품번");
+		p2.add(lblCode);
+		txtCode = new JTextField();
+		txtCode.setColumns(10);
+		p2.add(txtCode);
+		txtCode.setText("code");
+		
+		lblPrice = new JLabel("판매단가");
+		p2.add(lblPrice);
+		txtPrice = new JTextField();
+		txtPrice.setColumns(10);
+		p2.add(txtPrice);
+		txtPrice.setText("price");
+		
+			// radio*
 		MyItemListener itemlis = new MyItemListener(); // 아이템 감시자
 		ButtonGroup g = new ButtonGroup(); // 라디오 버튼 묶을 그룹
 
@@ -62,19 +76,20 @@ public class StockSearch extends JPanel {
 			rdbtn[i].addItemListener(itemlis); // 감시자 부착
 		}
 		rdbtn[0].setSelected(true); // 해당 버튼이 선택된 상태
-
-		// btn
+				
+			// btn
 		btnSearch = new JButton("조회");
 		p2.add(btnSearch);
 
 		// 3
-		String firstTabName[] = { "품 번", "판매단가" };
-		Object firstData[][] = { { "181001", "59,000" } };
-		firstTabModel = new DefaultTableModel(firstData, firstTabName);
-		firstTab = new JTable(firstTabModel);
-		firstSc = new JScrollPane(firstTab);
-		firstSc.setPreferredSize(new Dimension(450, 100));
-		add(firstSc);
+		
+//		String firstTabName[] = { "품 번", "판매단가" };
+//		Object firstData[][] = { { "181001", "59,000" } };
+//		firstTabModel = new DefaultTableModel(firstData, firstTabName);
+//		firstTab = new JTable(firstTabModel);
+//		firstSc = new JScrollPane(firstTab);
+//		firstSc.setPreferredSize(new Dimension(450, 100));
+//		add(firstSc);
 
 		// 4
 		String secTabName[] = { "색상", "사이즈", "매장코드", "매장명", "전화번호", "재고" };
@@ -90,11 +105,11 @@ public class StockSearch extends JPanel {
 		DefaultTableCellRenderer tCellRenderer = new DefaultTableCellRenderer();
 		tCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-		TableColumnModel t1ColModel = firstTab.getColumnModel();
+		//TableColumnModel t1ColModel = firstTab.getColumnModel();
 		TableColumnModel t2ColModel = secTab.getColumnModel();
 
-		for (int i = 0; i < t1ColModel.getColumnCount(); i++)
-			t1ColModel.getColumn(i).setCellRenderer(tCellRenderer);
+		//for (int i = 0; i < t1ColModel.getColumnCount(); i++)
+		//	t1ColModel.getColumn(i).setCellRenderer(tCellRenderer);
 
 		for (int i = 0; i < t2ColModel.getColumnCount(); i++)
 			t2ColModel.getColumn(i).setCellRenderer(tCellRenderer);

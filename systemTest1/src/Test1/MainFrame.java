@@ -17,7 +17,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	JMenu mSalesmenu, mStockmenu,mAdmMenu,mLogoutMenu;
 	JMenuItem mSalesReg, mSalesStatus,mStock, mLogout,mNewProdReg,mProdInfoModify,mAccount;
 	CardLayout card = new CardLayout();
-
+	
 	public MainFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 650, 450);
@@ -64,7 +64,6 @@ public class MainFrame extends JFrame implements ActionListener{
 
 		mLogout = new JMenuItem("로그아웃");
 		mLogoutMenu.add(mLogout);
-
 
 		// contentPane.add("패널별명", new 패널());
 		contentPane.add("SalesReg", new SalesReg());
