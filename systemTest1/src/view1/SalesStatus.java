@@ -30,6 +30,8 @@ public class SalesStatus extends JPanel implements ActionListener{
 	
 	private JButton btnEx;
 	
+	String total = "1,406,100";
+	
 	public SalesStatus() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
@@ -47,17 +49,19 @@ public class SalesStatus extends JPanel implements ActionListener{
 		// 2
 		 p2 = new JPanel();
 		FlowLayout flowLayout_2 = (FlowLayout) p2.getLayout();
-		flowLayout_2.setAlignment(FlowLayout.RIGHT);
+		flowLayout_2.setAlignment(FlowLayout.LEFT);
 		add(p2);
 
 		dateLab = new JLabel("기 간");
 		dateLab.setBounds(100, 100, 450, 300);
 		p2.add(dateLab);
 
+			//* 데이터 있는 월만 가져오기 가능?
 		dateComboBox = new JComboBox(date);
 		p2.add(dateComboBox);
 
 		btnSearch = new JButton("조회");
+		btnSearch.addActionListener(this);
 		p2.add(btnSearch);
 		
 		// 임시버튼
@@ -79,15 +83,16 @@ public class SalesStatus extends JPanel implements ActionListener{
 		firstSc = new JScrollPane(firstTab);
 		add(firstSc);
 
-		// 4
-		String te = "1,406,100";
+		// 4		
 		JPanel p3 = new JPanel();
 		FlowLayout flowLayout_1 = (FlowLayout) p3.getLayout();
 		flowLayout_1.setHgap(20);
 		flowLayout_1.setAlignment(FlowLayout.RIGHT);
 		add(p3);
+		
+			//* 누적액 총합계 구하기
 		totalLab = new JLabel("총 계 : ");
-		totalLab.setText("총 계: " + te);
+		totalLab.setText("총 계: " + total);
 		p3.add(totalLab);
 
 		// table center align
@@ -102,8 +107,12 @@ public class SalesStatus extends JPanel implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		if(e.getSource() == btnSearch) {
+			//조회
+			//기간 넘겨주기
+		}
 		if(e.getSource() == btnEx) {
+			//행 선택시 해당 일자 판매내역 팝업
 			OpenStatus op = new OpenStatus();
 		}
 	}
