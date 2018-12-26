@@ -1,4 +1,4 @@
-package Test1;
+package view1;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;

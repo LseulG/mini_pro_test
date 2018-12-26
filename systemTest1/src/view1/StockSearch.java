@@ -1,4 +1,4 @@
-package Test1;
+package view1;
 
 import java.awt.FlowLayout;
 import java.awt.Font;

@@ -1,4 +1,4 @@
-package Test1;
+package view1;
 
 public class Start {
 	LoginView loginView;
