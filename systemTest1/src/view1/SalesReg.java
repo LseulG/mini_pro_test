@@ -35,6 +35,8 @@ public class SalesReg extends JPanel implements ActionListener{
 	String divS[] = {"판매","반품"};
 	String sizeS[] = {"S","M","L","XL"};	
 	
+	String code = null;
+	
 	LocalDate currDate = LocalDate.now();
 	/*
 	 * currDate.getYear() 년
@@ -61,7 +63,11 @@ public class SalesReg extends JPanel implements ActionListener{
 			//* 총판매금액 - 실판매금액 총액 계산
 		String firstTabName[] = { "판매일자", "총판매금액" };
 		Object firstData[][] = { { currDate, "20,000" } };
-		firstTabModel = new DefaultTableModel(firstData, firstTabName);
+		firstTabModel = new DefaultTableModel(firstData, firstTabName){
+			public boolean isCellEditable(int row, int col) {
+				return false; // 테이블 수정 못하게
+			}
+		};
 		firstTab = new JTable(firstTabModel);
 		firstSc = new JScrollPane(firstTab);
 		firstSc.setPreferredSize(new Dimension(450, 80));
@@ -100,12 +106,14 @@ public class SalesReg extends JPanel implements ActionListener{
 		lblPrice = new JLabel(" 판매단가");	p2.add(lblPrice);		
 		txtPrice = new JTextField();
 		txtPrice.setText("0");
-		p2.add(txtPrice); //수정 못하게
+		txtPrice.setEditable(false);
+		p2.add(txtPrice);
 		
 		lblQty = new JLabel(" 재고");	p2.add(lblQty);		
 		txtQty = new JTextField();
 		txtQty.setText("0");
-		p2.add(txtQty); //수정 못하게
+		txtQty.setEditable(false);
+		p2.add(txtQty);
 		
 		lblSqty = new JLabel(" 수량");	p2.add(lblSqty);		
 		txtSqty = new JTextField();
@@ -121,12 +129,16 @@ public class SalesReg extends JPanel implements ActionListener{
 		btnReg.addActionListener(this);
 		p2.add(btnReg);
 				
-		// 4 - 수정 못하게, 클릭해서 삭제	
+		// 4 - 클릭해서 삭제	
 		String secTabName[] = { "구분", "품번", "색상", "사이즈", "판매단가", "수량", "실판매금액"};
 		Object secData[][] = { { "판매", "1", "BK", "S", "5000", "1", "5000" },
 				{ "반품", "2", "WH", "M", "7000", "1", "7000" },
 				{ "판매", "3", "BK", "L", "6000", "1", "6000" } };
-		secTabModel = new DefaultTableModel(secData, secTabName);
+		secTabModel = new DefaultTableModel(secData, secTabName){
+			public boolean isCellEditable(int row, int col) {
+				return false; // 테이블 수정 못하게
+			}
+		};
 		secTab = new JTable(secTabModel);
 		secSc = new JScrollPane(secTab);
 		add(secSc);
@@ -153,24 +165,39 @@ public class SalesReg extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		String code = txtCode.getText();
+		String group = (String)divCB.getSelectedItem();
+		String no = txtCode.getText();
 		String color = (String)colorCB.getSelectedItem();
 		String size = (String)sizeCB.getSelectedItem();
+		String s_qty = txtSqty.getText();
+		String s_price = txtSprice.getText();
 		
-		if (e.getSource() == btnSearch) {
-			//조회
-			//품번, 색상, 사이즈 넘기기
-			//판매단가, 재고 가져오기
-			dbcon.pro_select(code,color,size);
+		
+		
+		if (e.getSource() == btnSearch) {			//조회
+			dbcon = new DBcon();
+			dbcon.pro_select(no,color,size);
 			
+			//판매단가, 재고 가져오기 +)상품코드가져오기
+			String price = dbcon.getPrice().toString();
+			String qty = dbcon.getQty().toString();
+			this.code = dbcon.getCode();
+			
+			txtPrice.setText(price);	txtQty.setText(qty);
+			txtSqty.setText("1");	txtSprice.setText(price);	
 		}
-		if (e.getSource() == btnReg) {
-			//등록
-			//날짜(currDate), 구분, 품번, 색상, 사이즈, 수량, 실판매금액 넘기기
-			//테이블에 내역 추가
+		
+		if (e.getSource() == btnReg) {			//등록
+			//dbcon = new DBcon();
+			
+			//테이블에 내역 추가			
+			dbcon.pro_reg(secTab,currDate,group,code,s_qty,s_price);			
+			
+//			dbcon.clear(secTab);
+//			dbcon.pro_reg(secTab,currDate,group,code,s_qty,s_price);
+		
 		}	
-		if (e.getSource() == btnDelete) {
-			//삭제
+		if (e.getSource() == btnDelete) {			//삭제
 			//선택한 테이블 행 삭제
 			//선택한 테이블 데이터 넘기기
 		}

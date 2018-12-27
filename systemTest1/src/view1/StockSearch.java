@@ -73,7 +73,11 @@ public class StockSearch extends JPanel implements ActionListener {
 		// 4
 		String firstTabName[] = { "색상", "사이즈", "매장코드", "매장명", "전화번호", "재고" };
 		Object firstData[][] = new Object[0][6];
-		firstTabModel = new DefaultTableModel(firstData, firstTabName);
+		firstTabModel = new DefaultTableModel(firstData, firstTabName){
+			public boolean isCellEditable(int row, int col) {
+				return false; // 테이블 수정 못하게
+			}
+		};
 		firstTab = new JTable(firstTabModel);
 		firstSc = new JScrollPane(firstTab);
 		add(firstSc);
@@ -92,11 +96,11 @@ public class StockSearch extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnSearch) {
 			DBcon dbcon = new DBcon();
-			String code = txtCode.getText();
+			String no = txtCode.getText();
 			
 			dbcon.clear(firstTab);
-			dbcon.stock_select(firstTab,code);
-			price = dbcon.getPrice();
+			dbcon.stock_select(firstTab,no);
+			price = dbcon.getPrice().toString();
 			lblPriceNum.setText(price);
 		}
 	}

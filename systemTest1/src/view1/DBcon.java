@@ -5,17 +5,19 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class DBcon {
 	JTable table; // stock_select
-	String code, price; // stock_select, getPrice
-	String userID, userPW; // login
+	String no; // stock_select, getPrice
+	String user; // login
+	String code;
 	int logCnt; // login
+	int price, qty; // pro_select
 
 	// db 연동
 	Connection con = null;
@@ -26,6 +28,7 @@ public class DBcon {
 		connect();
 	}
 
+	// DB connect
 	public void connect() {
 		String URL = "jdbc:oracle:thin:@localhost:1521:orcl";
 		String ID = "project1";
@@ -42,17 +45,19 @@ public class DBcon {
 		}
 	}
 
+	// DB disconnect
 	public void disconn() {
 		try {
 			System.out.println("DB 종료");
-			rs.close();
+			rs.close(); // insert 문장에서 필요 없음... 우야지...
 			pstmt.close();
 			con.close();
 		} catch (Exception e) {
 			System.out.println("DB 종료 오류");
 		}
 	}
-	
+
+	// LoginView - login check
 	public void loginCheck(String id, String pw, String radio) {
 		String query;
 		if (radio.equals("매장")) {
@@ -60,24 +65,28 @@ public class DBcon {
 		} else { // radio = 본사
 			query = "select h_id, h_pw from head";
 		}
-		
+
 		try {
 			pstmt = con.prepareStatement(query);
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				this.userID = rs.getString(1);
-				this.userPW = rs.getString(2);
-				
-				System.out.println(userID+userPW);
-				
-				if (id.equals(userID) && pw.equals(userPW)) {
+				if (id.equals(rs.getString(1)) && pw.equals(rs.getString(2))) {
 					this.logCnt = 1;
+
+					query = "select s_code from store where m_id='" + id + "'";
+					pstmt = con.prepareStatement(query);
+					rs = pstmt.executeQuery();
+					while (rs.next()) {
+						String s_user = rs.getString(1); // 로그인 유저의 매장 코드 user에 입력
+						this.user = s_user;
+					}
+					System.out.println(user);
 					break;
-				}else {
+				} else {
 					this.logCnt = 2;
 				}
-			}		
+			}
 			System.out.println("login query 성공");
 		} catch (SQLException e) {
 			System.out.println("login query 오류");
@@ -85,35 +94,37 @@ public class DBcon {
 		} finally {
 			disconn();
 		}
-	}	
-	public Integer getLogCnt() {
-		return logCnt;
 	}
 
-	public void stock_select(JTable table, String code) {
+	public Integer getLogCnt() {
+		return logCnt; // 로그인 성공 여부 count 반환
+	}
+
+	// StockSearch - stock search
+	public void stock_select(JTable table, String no) {
 		this.table = table;
-		this.code = code;
-		
+		this.no = no;
+
 		// 품번, 단가/ 색상, 사이즈, 매장코드, 매장명, 전화번호, 재고
 		String query = "select p_no, p_price, p_color, p_size, store.s_code, s_name, s_phone, stock.p_qty\r\n"
 				+ "from product, stock, store\r\n" + "where product.p_code=stock.p_code\r\n"
-				+ "and store.s_code=stock.s_code\r\n" + "and p_no='" + code + "'\r\n" + "order by store.s_code";
+				+ "and store.s_code=stock.s_code\r\n" + "and p_no='" + no + "'\r\n" + "order by store.s_code";
 
 		try {
 			pstmt = con.prepareStatement(query);
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				String p_price = rs.getString(2);
+				int p_price = rs.getInt(2);
 				String color = rs.getString(3);
 				String size = rs.getString(4);
-				String s_code = rs.getString(5);
+				String s_no = rs.getString(5);
 				String s_name = rs.getString(6);
 				String phone = rs.getString(7);
 				String qty = rs.getString(8);
 
 				this.price = p_price;
-				Object data[] = { color, size, s_code, s_name, phone, qty };
+				Object data[] = { color, size, s_no, s_name, phone, qty };
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.addRow(data);
 			}
@@ -126,10 +137,11 @@ public class DBcon {
 		}
 	}
 
-	public String getPrice() {
-		return price;
+	public Integer getPrice() {
+		return price; // 해당 품번 판매단가 반환
 	}
 
+	// SalesReg - 상품 전체의 컬러 combobox list에 추가
 	public void combo_color(JComboBox combo) {
 		String query = "select distinct p_color from product";
 
@@ -149,17 +161,25 @@ public class DBcon {
 		}
 	}
 
-	// 수정해야함
-	public void pro_select(String code, String color, String size) {
-		String query = "select distinct p_color from product";
-
+	// SalesReg - 상품 조회
+	// +) user,price...
+	public void pro_select(String no, String color, String size) {
+		String query = "select p_price, p_qty, product.p_code from product, stock\r\n"
+				+ "where product.p_code=stock.p_code \r\n"
+				// + "and s_code='" + this.user + "'\r\n"
+				+ "and s_code='S1101'\r\n" + "and p_no='" + no + "' and p_color='" + color + "' and p_size='" + size
+				+ "'";
+		System.out.println(user + no + color + size);
 		try {
 			pstmt = con.prepareStatement(query);
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				rs.getString(1);
+				this.price = rs.getInt(1);
+				this.qty = rs.getInt(2);
+				this.code = rs.getString(3);
 			}
+			System.out.println(price + qty);
 			System.out.println("pro_select 성공");
 		} catch (SQLException e) {
 			System.out.println("pro_select 오류");
@@ -169,6 +189,54 @@ public class DBcon {
 		}
 	}
 
+//	public String getPrice() {
+//		return price; // 해당 품번 판매단가 반환
+//	}
+	public Integer getQty() {
+		return qty; // 해당 품번 판매단가 반환
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	// SalesReg - 상품 등록 //////////////수정쓰~//////
+	public void pro_reg(JTable table, LocalDate currDate, String group, String code, String s_qty, String s_price) {
+		this.table = table;
+
+		String query = "";
+
+		try {
+			pstmt = con.prepareStatement(query);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				rs.getString(1);
+
+				/*
+				 * String ssn = "991102-1888888"; 
+				 * 
+				 * String firstSSN = ssn.substring(0,6); // 0포함 ~6제외 문자열 추출 
+				 * System.out.println("앞자리: " + firstSSN);
+				 * 
+				 * String secondSSN = ssn.substring(7); // 7포함~ 문자열 추출
+				 * System.out.println("뒷자리: " + secondSSN);
+				 */
+				
+				Object data[] = {};
+				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				model.addRow(data);
+			}
+			System.out.println("pro_reg 성공");
+		} catch (SQLException e) {
+			System.out.println("pro_reg 오류");
+			e.printStackTrace();
+		} finally {
+			disconn();
+		}
+	}
+
+	// JTable 필드 초기화
 	public void clear(JTable table) {
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		while (model.getRowCount() > 0) {
