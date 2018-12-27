@@ -105,4 +105,3 @@ public class StockSearch extends JPanel implements ActionListener {
 		}
 	}
 }
-
