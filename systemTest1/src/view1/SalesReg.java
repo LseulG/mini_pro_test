@@ -30,9 +30,10 @@ public class SalesReg extends JPanel implements ActionListener{
 	private JButton btnSearch, btnReg, btnDelete;
 	private JComboBox divCB, colorCB, sizeCB;
 	
+	DBcon dbcon = new DBcon();
+	
 	String divS[] = {"판매","반품"};
-	String colorS[] = {"선택","BK","WH","NV","CR"};
-	String sizeS[] = {"선택","S","M","L","XL"};	
+	String sizeS[] = {"S","M","L","XL"};	
 	
 	LocalDate currDate = LocalDate.now();
 	/*
@@ -82,9 +83,9 @@ public class SalesReg extends JPanel implements ActionListener{
 		txtCode = new JTextField();
 		p2.add(txtCode);
 		
-			//* 상품 테이블에 있는 색상만 나오게/ 아님 그냥 사이즈랑 같이 textfield?
 		lblColor = new JLabel(" 색상"); 	p2.add(lblColor);		
-		colorCB = new JComboBox(colorS);
+		colorCB = new JComboBox();
+		dbcon.combo_color(colorCB);
 		p2.add(colorCB);
 		
 		lblSize = new JLabel(" 사이즈");	p2.add(lblSize);		
@@ -152,12 +153,16 @@ public class SalesReg extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		DBcon dbcon = new DBcon();
+		String code = txtCode.getText();
+		String color = (String)colorCB.getSelectedItem();
+		String size = (String)sizeCB.getSelectedItem();
 		
 		if (e.getSource() == btnSearch) {
 			//조회
 			//품번, 색상, 사이즈 넘기기
 			//판매단가, 재고 가져오기
+			dbcon.pro_select(code,color,size);
+			
 		}
 		if (e.getSource() == btnReg) {
 			//등록
