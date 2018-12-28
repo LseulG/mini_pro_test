@@ -1,10 +1,8 @@
 package view1;
-
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,17 +17,23 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 
 public class StockSearch extends JPanel implements ActionListener {
-	JLabel lab;
-	DefaultTableModel firstTabModel;
-	JTable firstTab;
-	JScrollPane firstSc;
+	private DefaultTableModel firstTabModel;
+	private JTable firstTab;
+	private JScrollPane firstSc;
 	private JButton btnSearch;
-	private JLabel lblCode, lblPrice, lblPriceNum;
+	private JLabel lab, lblCode, lblPrice, lblPriceNum;
 	private JTextField txtCode;
+	
+	private DBcon myDBcon;
 	
 	String price = "0";
 	
-	public StockSearch() {
+	private void setDBcon(DBcon dbcon) {
+		myDBcon = dbcon;
+	}
+	
+	public StockSearch(DBcon dbcon) {
+		setDBcon(dbcon);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		// 1
@@ -95,12 +99,11 @@ public class StockSearch extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnSearch) {
-			DBcon dbcon = new DBcon();
 			String no = txtCode.getText();
 			
-			dbcon.clear(firstTab);
-			dbcon.stock_select(firstTab,no);
-			price = dbcon.getPrice().toString();
+			myDBcon.clear(firstTab);
+			myDBcon.stock_select(firstTab,no);
+			price = myDBcon.getPrice().toString();
 			lblPriceNum.setText(price);
 		}
 	}
