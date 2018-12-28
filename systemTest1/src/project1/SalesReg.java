@@ -42,7 +42,6 @@ public class SalesReg extends JPanel implements ActionListener{
 	 * currDate.getDayOfMonth() 일
 	 * currDate.getDayOfWeek() 요일
 	 */
-
 	private void setDBcon(DBcon dbcon) {
 		myDBcon = dbcon;
 	}
@@ -189,7 +188,6 @@ public class SalesReg extends JPanel implements ActionListener{
 		}
 		
 		if (e.getSource() == btnReg) {			//등록
-			//테이블에 내역 추가	
 			myDBcon.clear(secTab);
 			myDBcon.pro_reg(secTab,group,s_qty,s_price);			
 		}	

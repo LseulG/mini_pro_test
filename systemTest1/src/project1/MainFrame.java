@@ -58,7 +58,7 @@ public class MainFrame extends JFrame implements ActionListener{
 		mProdInfoModify = new JMenuItem("상품정보 수정");
 		mAdmMenu.add(mProdInfoModify);
 		
-		mAccount = new JMenuItem("계정 조회/생성");
+		mAccount = new JMenuItem("계정 생성/조회");
 		mAdmMenu.add(mAccount);
 		
 		// menu_4

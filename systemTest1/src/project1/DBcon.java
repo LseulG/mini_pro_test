@@ -14,12 +14,11 @@ import javax.swing.table.DefaultTableModel;
 public class DBcon {
 	JTable table; // stock_select
 	String no, color, size; // stock_select, getPrice
-	String user; // login
-	String code;
+	String user, code; // login
 	int logCnt; // login
-	int price, qty; // pro_select
-	int groupInt;
 	int statusCnt = 1;
+	int price, qty, groupInt; // pro_select
+	
 	LocalDate currDate = LocalDate.now();
 
 	// DB 연동
@@ -159,7 +158,7 @@ public class DBcon {
 		}
 	}
 
-	// SalesReg - 상품 조회
+	// 판매등록 - 조회
 	public void pro_select(String no, String color, String size) {
 		String query = "select p_price, p_qty, product.p_code from product, stock\r\n"
 				+ "where product.p_code=stock.p_code \r\n" + "and s_code='" + this.user + "'\r\n" + "and p_no='" + no
@@ -188,7 +187,7 @@ public class DBcon {
 		return qty; // 해당 품번 판매단가 반환
 	}
 
-	// SalesReg - 상품 등록 //////////////수정쓰~//////
+	// 판매등록 - 등록 
 	// +) insert 하고, pro_select 해서 테이블에 뿌려주기?
 	public void pro_reg(JTable table, String group, String s_qty, String s_price) {
 		this.table = table;
