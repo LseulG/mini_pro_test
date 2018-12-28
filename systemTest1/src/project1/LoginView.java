@@ -1,4 +1,4 @@
-package view1;
+package project1;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

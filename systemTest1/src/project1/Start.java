@@ -1,4 +1,4 @@
-package view1;
+package project1;
 
 public class Start {
 	private DBcon myDBcon;
