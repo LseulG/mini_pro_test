@@ -20,10 +20,14 @@ public class AccountLookupCreate extends JPanel {
 	private JTable table;
 	private JTable table_1;
 
-	/**
-	 * Create the panel.
-	 */
-	public AccountLookupCreate() {
+	private DBcon myDBcon;
+	
+	private void setDBcon(DBcon dbcon) {
+		myDBcon = dbcon;
+	}
+	
+	public AccountLookupCreate(DBcon dbcon) {
+		setDBcon(dbcon);
 		setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("계정 생성");

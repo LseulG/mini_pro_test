@@ -73,9 +73,9 @@ public class MainFrame extends JFrame implements ActionListener{
 		contentPane.add("SalesReg", new SalesReg(myDBcon)); //판매등록
 		contentPane.add("SalesStatus", new SalesStatus(myDBcon)); //판매현황
 		contentPane.add("Stock", new StockSearch(myDBcon)); //재고조회
-		contentPane.add("NewProdReg", new NewProReg()); //신상품등록
-		contentPane.add("ProdInfoModify", new ProdInfoModify()); // 상품정보 수정 
-		contentPane.add("Account", new AccountLookupCreate()); // 계정조희 및 생성
+		contentPane.add("NewProdReg", new NewProReg(myDBcon)); //신상품등록
+		contentPane.add("ProdInfoModify", new ProdInfoModify(myDBcon)); // 상품정보 수정 
+		contentPane.add("Account", new AccountLookupCreate(myDBcon)); // 계정조희 및 생성
 
 		add(contentPane);
 

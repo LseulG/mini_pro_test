@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -251,6 +252,52 @@ public class DBcon {
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		while (model.getRowCount() > 0) {
 			model.removeRow(0);
+		}
+	}
+	
+	public void Insertpro(String p_code, String p_no, String p_color, String p_size, String p_price) {
+
+		String query = "INSERT INTO PRODUCT VALUES(UPPER('" + p_code + "')," + p_no + ",UPPER('" + p_color
+				+ "'),UPPER('" + p_size + "')," + p_price + ")";
+		try {
+			pstmt = con.prepareStatement(query);
+			rs = pstmt.executeQuery();
+			
+			JOptionPane.showMessageDialog(null, "입력되었습니다.");
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "입력오류.");
+		} 
+	}
+	
+	public void SearchPro(String p_no) {
+		String query = "SELECT DISTINCT P_PRICE FROM PRODUCT WHERE P_NO ="+
+						p_no;
+		try {
+			pstmt = con.prepareStatement(query);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				int str = rs.getInt(1);
+				this.price = str;
+			}
+		
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void UpdatePrice(String c_price,String p_no) {
+		String query = "UPDATE PRODUCT SET P_PRICE = " + c_price + "WHERE P_NO = "
+						+ p_no;
+		
+		try {
+			pstmt = con.prepareStatement(query);
+			rs = pstmt.executeQuery();
+			JOptionPane.showMessageDialog(null, "변경되었습니다.");
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 }
