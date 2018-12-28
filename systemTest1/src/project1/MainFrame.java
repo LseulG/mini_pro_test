@@ -1,7 +1,10 @@
 package project1;
+
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -18,11 +21,24 @@ public class MainFrame extends JFrame implements ActionListener{
 	JMenu mSalesmenu, mStockmenu,mAdmMenu,mLogoutMenu;
 	JMenuItem mSalesReg, mSalesStatus,mStock, mLogout,mNewProdReg,mProdInfoModify,mAccount;
 	CardLayout card = new CardLayout();
-
+	
 	public MainFrame(DBcon dbcon) {
 		setDBcon(dbcon);
 		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent windowEvent) {
+				int dialogResult = JOptionPane.showConfirmDialog(contentPane, "종료 하시겠습니까?", "exit", 
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				
+				if(dialogResult == 0) { // 예  
+					myDBcon.disconn();
+					System.exit(0);
+				}
+			}
+		});
+		
 		setBounds(100, 100, 650, 450);
 
 		contentPane = new JPanel();
@@ -109,13 +125,10 @@ public class MainFrame extends JFrame implements ActionListener{
 			card.show(contentPane, "Account");
 		}
 		else if (e.getSource() == mLogout) {
-			int result;
-			String[] option = {"예", "아니오"};
-			result = JOptionPane.showOptionDialog(this, "로그아웃 하시겠습니까?", "logout", 
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, 
-					null, option, option[1]);
+			int dialogResult = JOptionPane.showConfirmDialog(this, "로그아웃 하시겠습니까?", "logout", 
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			
-			if(result == 0) { // 예  
+			if(dialogResult == 0) { // 예  
 				// +)로그인 화면으로 이동
 				myDBcon.disconn();
 				dispose();
