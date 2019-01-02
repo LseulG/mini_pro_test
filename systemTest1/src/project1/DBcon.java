@@ -168,13 +168,13 @@ public class DBcon {
 	}
 
 	// 판매등록 - 판매현황 테이블
-	public void salesStatusSearch(JTable table) {
+	public void salesStatusSearch(JTable table, Object date) {
 		this.table = table;
 		
 		String query = "select sa_no, sa_group, sales.p_code, p_price, sa_qty, sa_price\r\n" + 
 				"from sales, product\r\n" + 
 				"where sales.p_code = product.p_code\r\n" + 
-				"and sa_date = '"+ currDate +"' and s_code = '"+ user +"' \r\n" + 
+				"and sa_date = '"+ date +"' and s_code = '"+ user +"' \r\n" + 
 				"order by sa_no"; 
 
 		try {
@@ -269,7 +269,7 @@ public class DBcon {
 			pstmt = con.prepareStatement(query);
 			rs = pstmt.executeQuery();
 			
-			salesStatusSearch(table);
+			salesStatusSearch(table,currDate);
 				
 			clear(totalTable);
 			Object data[] = { currDate, totalPrice };

@@ -67,7 +67,6 @@ public class SalesReg extends JPanel implements ActionListener{
 		p1.add(lab);
 		
 		// 2
-			//* 총판매금액 - 실판매금액 총액 계산
 		String firstTabName[] = { "판매일자", "총판매금액" };
 		Object firstData[][] = { { currDate, totalPrice } };
 		firstTabModel = new DefaultTableModel(firstData, firstTabName){
@@ -148,7 +147,7 @@ public class SalesReg extends JPanel implements ActionListener{
 		secTab.getTableHeader().setReorderingAllowed(false); // 테이블 열 고정
 		secSc = new JScrollPane(secTab);
 		add(secSc);		
-		dbcon.salesStatusSearch(secTab);
+		dbcon.salesStatusSearch(secTab, currDate);
 		
 			//총판매금액 수정
 		totalPrice = dbcon.getTotalPrice();		

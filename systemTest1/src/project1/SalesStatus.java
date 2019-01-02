@@ -4,6 +4,9 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.time.LocalDate;
+import java.awt.event.MouseAdapter;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -23,7 +26,7 @@ public class SalesStatus extends JPanel implements ActionListener{
 	private JTable firstTab;
 	private JScrollPane firstSc;
 	private JComboBox<String> yearComboBox, monthComboBox;
-	private JButton btnSearch, btnEx;
+	private JButton btnSearch;
 	
 	private DBcon myDBcon;
 
@@ -76,11 +79,6 @@ public class SalesStatus extends JPanel implements ActionListener{
 		btnSearch.addActionListener(this);
 		p2.add(btnSearch);
 		
-		// 임시버튼
-		btnEx = new JButton("ex");
-		btnEx.addActionListener(this);
-		p2.add(btnEx);
-
 		// 3
 		String firstTabName[] = { "일자", "요일", "판매수량", "단가금액", "실판매금액", "누적금액(실판매)" };
 		Object firstData[][] = new Object[0][6];
@@ -125,10 +123,15 @@ public class SalesStatus extends JPanel implements ActionListener{
 		if(e.getSource() == btnSearch) {
 			myDBcon.clear(firstTab);
 			myDBcon.searchStatus(firstTab, date);
+			
+			// 테이블 클릭 시 이벤트
+			firstTab.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					int row = firstTab.getSelectedRow();
+					Object selectedDate = firstTabModel.getValueAt(row,0);
+					OpenStatus op = new OpenStatus(myDBcon,selectedDate);
+				}
+			});			
 		}
-		if(e.getSource() == btnEx) {
-			//행 선택시 해당 일자 판매내역 팝업
-			OpenStatus op = new OpenStatus();
-		}
-	}
+	}	
 }

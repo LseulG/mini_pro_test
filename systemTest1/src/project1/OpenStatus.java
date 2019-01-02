@@ -2,17 +2,20 @@ package project1;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
+import javax.swing.BoxLayout;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
-import javax.swing.SwingConstants;
-import javax.swing.BoxLayout;
 
 public class OpenStatus extends JDialog {
 
@@ -20,18 +23,25 @@ public class OpenStatus extends JDialog {
 	DefaultTableModel firstTabModel, secTabModel;
 	JTable firstTab, secTab;
 	JScrollPane firstSc, secSc;
+	
+	private DBcon myDBcon;
+	
+	private void setDBcon(DBcon dbcon) {
+		myDBcon = dbcon;
+	}
 
-	public OpenStatus() {
+	public OpenStatus(DBcon dbcon, Object selectedDate) {
+		setDBcon(dbcon);
 		setBounds(100, 100, 450, 300);
 		setSize(600, 400);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		
+			
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		{
 			// 1
 			String firstTabName[] = { "판매일자", "총판매금액" };
-			Object firstData[][] = { { "2018-11-02", "20,000" } };
+			Object firstData[][] = { { selectedDate, "20,000" } };
 			firstTabModel = new DefaultTableModel(firstData, firstTabName){
 				public boolean isCellEditable(int row, int col) {
 					return false; // 테이블 수정 못하게
@@ -46,9 +56,8 @@ public class OpenStatus extends JDialog {
 			
 			
 			// 2
-			String secTabName[] = { "일자", "요일", "수량", "단가금액", "실판매금액", "누적금액(실판매)" };
-			Object secData[][] = { { "2018-09-01", "토", "30", "748,600", "748,600", "748,600" },
-					{ "2018-09-02", "일", "25", "668,500", "657,500", "1,406,100" } };
+			String secTabName[] = { "번호", "구분", "품번", "색상", "사이즈", "판매단가", "수량", "실판매금액"};
+			Object secData[][] = new Object[0][8];
 			secTabModel = new DefaultTableModel(secData, secTabName){
 				public boolean isCellEditable(int row, int col) {
 					return false; // 테이블 수정 못하게
@@ -58,6 +67,14 @@ public class OpenStatus extends JDialog {
 			secTab.getTableHeader().setReorderingAllowed(false); // 테이블 열 고정
 			secSc = new JScrollPane(secTab);
 			contentPanel.add(secSc);
+			dbcon.salesStatusSearch(secTab, selectedDate);
+			
+				//총판매금액 수정
+			int totalPrice = dbcon.getTotalPrice();		
+			myDBcon.clear(firstTab);
+			Object data[] = { selectedDate, totalPrice };
+			DefaultTableModel model = (DefaultTableModel) firstTab.getModel();
+			model.addRow(data);
 			
 			// table center align
 			DefaultTableCellRenderer tCellRenderer = new DefaultTableCellRenderer();
@@ -75,6 +92,13 @@ public class OpenStatus extends JDialog {
 		
 		setModal(true);
 		setVisible(true);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent windowEvent) {
+				System.exit(0);
+			}
+		});
 	}
 
 }
