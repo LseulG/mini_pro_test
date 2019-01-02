@@ -18,16 +18,18 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
 public class SalesStatus extends JPanel implements ActionListener{
-	private JLabel lab, dateLab, totalLab;
+	private JLabel lab, dateLab, yearLabel, monthLabel, totalLab;
 	private DefaultTableModel firstTabModel;
 	private JTable firstTab;
 	private JScrollPane firstSc;
-	private JComboBox<String> dateComboBox;
+	private JComboBox<String> yearComboBox, monthComboBox;
 	private JButton btnSearch, btnEx;
 	
 	private DBcon myDBcon;
 
-	String date[] = { "2018-09", "2018-10", "2018-11", "2018-12" };
+	String year[] = { "2018", "2019" };
+	String month[] = { "01","02","03","04","05","06","07","08","09","10","11","12"};
+	
 	String total = "1,406,100";
 	
 	private void setDBcon(DBcon dbcon) {
@@ -60,8 +62,15 @@ public class SalesStatus extends JPanel implements ActionListener{
 		p2.add(dateLab);
 
 			//* 데이터 있는 월만 가져오기 가능?
-		dateComboBox = new JComboBox<String>(date);
-		p2.add(dateComboBox);
+		yearComboBox = new JComboBox<String>(year);
+		p2.add(yearComboBox);
+		yearLabel = new JLabel("년 ");
+		p2.add(yearLabel);
+		
+		monthComboBox = new JComboBox<String>(month);
+		p2.add(monthComboBox);
+		monthLabel = new JLabel("월 ");
+		p2.add(monthLabel);
 
 		btnSearch = new JButton("조회");
 		btnSearch.addActionListener(this);
@@ -73,9 +82,8 @@ public class SalesStatus extends JPanel implements ActionListener{
 		p2.add(btnEx);
 
 		// 3
-		String firstTabName[] = { "일자", "요일", "수량", "단가금액", "실판매금액", "누적금액(실판매)" };
-		Object firstData[][] = { { "2018-09-01", "토", "30", "748,600", "748,600", "748,600" },
-				{ "2018-09-02", "일", "25", "668,500", "657,500", "1,406,100" } };
+		String firstTabName[] = { "일자", "요일", "판매수량", "단가금액", "실판매금액", "누적금액(실판매)" };
+		Object firstData[][] = new Object[0][6];
 		firstTabModel = new DefaultTableModel(firstData, firstTabName) {
 			public boolean isCellEditable(int row, int col) {
 				return false; // 테이블 수정 못하게
@@ -94,8 +102,8 @@ public class SalesStatus extends JPanel implements ActionListener{
 		add(p3);
 		
 			//* 누적액 총합계 구하기
-		totalLab = new JLabel("총 계 : ");
-		totalLab.setText("총 계: " + total);
+		totalLab = new JLabel();
+		totalLab.setText("총 실판매금액: " + total);
 		p3.add(totalLab);
 
 		// table center align
@@ -110,9 +118,13 @@ public class SalesStatus extends JPanel implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		String year = (String)yearComboBox.getSelectedItem();
+		String month = (String)monthComboBox.getSelectedItem();
+		String date = year.substring(2) + month;
+		
 		if(e.getSource() == btnSearch) {
-			//조회
-			//기간 넘겨주기
+			myDBcon.clear(firstTab);
+			myDBcon.searchStatus(firstTab, date);
 		}
 		if(e.getSource() == btnEx) {
 			//행 선택시 해당 일자 판매내역 팝업

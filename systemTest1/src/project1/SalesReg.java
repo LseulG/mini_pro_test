@@ -2,29 +2,37 @@ package project1;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.JButton;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+
+/*
+ * 매장 메뉴
+ * 판매관리 - 판매등록
+ * 
+ */
+
 public class SalesReg extends JPanel implements ActionListener{
 	private DefaultTableModel firstTabModel, secTabModel;
 	private JTable firstTab, secTab;
 	private JScrollPane firstSc, secSc;
-	private JLabel lab, lblDiv, lblCode, lblColor, lblSize, lblPrice, lblQty, lblSqty, lblSprice;
+	private JLabel lab, lblDiv, lblCode, lblColor, lblSize, 
+			lblPrice, lblQty, lblSqty, lblSprice;
 	private JTextField txtCode, txtPrice, txtQty, txtSqty, txtSprice;
 	private JButton btnSearch, btnReg, btnDelete;
 	private JComboBox<String> divCB, colorCB, sizeCB;
@@ -33,16 +41,12 @@ public class SalesReg extends JPanel implements ActionListener{
 	
 	String divS[] = {"판매","반품"};
 	String sizeS[] = {"S","M","L","XL"};	
-	LocalDate currDate = LocalDate.now();
+	//LocalDate currDate = LocalDate.now();
+	LocalDate currDate = LocalDate.of(2018, 11, 1);
 	
 	String code = null;
 	int totalPrice = 0;
-	/*
-	 * currDate.getYear() 년
-	 * currDate.getMonthValue() 월
-	 * currDate.getDayOfMonth() 일
-	 * currDate.getDayOfWeek() 요일
-	 */
+	
 	private void setDBcon(DBcon dbcon) {
 		myDBcon = dbcon;
 	}
@@ -145,8 +149,13 @@ public class SalesReg extends JPanel implements ActionListener{
 		secSc = new JScrollPane(secTab);
 		add(secSc);		
 		dbcon.salesStatusSearch(secTab);
-		totalPrice = dbcon.getTotalPrice();
-		System.out.println(totalPrice);
+		
+			//총판매금액 수정
+		totalPrice = dbcon.getTotalPrice();		
+		myDBcon.clear(firstTab);
+		Object data[] = { currDate, totalPrice };
+		DefaultTableModel model = (DefaultTableModel) firstTab.getModel();
+		model.addRow(data);
 		
 		JPanel p3 = new JPanel();
 		add(p3);		
@@ -179,24 +188,35 @@ public class SalesReg extends JPanel implements ActionListener{
 		String s_qty = txtSqty.getText();
 		String s_price = txtSprice.getText();
 		
+		
 		if (e.getSource() == btnSearch) {			//조회
 			myDBcon.pro_select(no,color,size);
 			
 			//판매단가, 재고 가져오기 +)상품코드가져오기
-			String price = myDBcon.getPrice().toString();
+			String p_price = myDBcon.getPrice().toString();
 			String qty = myDBcon.getQty().toString();
 			
-			txtPrice.setText(price);	txtQty.setText(qty);
-			txtSqty.setText("1");	txtSprice.setText(price);	
+			txtPrice.setText(p_price);	txtQty.setText(qty);
+			txtSqty.setText("1");	txtSprice.setText(p_price);	
 		}
 		
 		if (e.getSource() == btnReg) {			//등록
+			String p_price = myDBcon.getPrice().toString();
 			myDBcon.clear(secTab);
-			myDBcon.pro_reg(secTab,group,s_qty,s_price);
+			myDBcon.pro_reg(firstTab, secTab,group,p_price,s_qty,s_price);
 		}	
+		
 		if (e.getSource() == btnDelete) {			//삭제
-			//선택한 테이블 행 삭제
-			//선택한 테이블 데이터 넘기기
+			int row = secTab.getSelectedRow();
+			
+			if(secTab.getSelectedRow() > 0) {
+				String salesNum = (String) secTabModel.getValueAt(row,0);
+				myDBcon.salesDelete(salesNum);
+				
+				secTabModel.removeRow(secTab.getSelectedRow());
+			} else {
+				JOptionPane.showMessageDialog(null,"삭제할 행을 클릭하세요.");
+			}			
 		}
 	}
 }

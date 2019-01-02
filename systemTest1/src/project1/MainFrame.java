@@ -49,8 +49,6 @@ public class MainFrame extends JFrame implements ActionListener{
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);	
 		
-		System.out.println(userCode);
-
 		// menu_1
 		if(userCode.equals("S")) {
 			mSalesmenu = new JMenu("판매관리");

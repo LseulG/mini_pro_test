@@ -5,7 +5,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -21,7 +23,9 @@ public class DBcon {
 	int price, qty, groupInt; // pro_select
 	int totalPrice = 0;
 
-	LocalDate currDate = LocalDate.now();
+	//LocalDate currDate = LocalDate.now();
+	LocalDate currDate = LocalDate.of(2018, 11, 1);
+	String dateCode = "181101";
 
 	// DB 연동
 	Connection con = null;
@@ -86,7 +90,7 @@ public class DBcon {
 						String s_user = rs.getString(1); // 로그인 유저의 매장 코드 user에 입력
 						this.user = s_user;
 					}
-					System.out.println(user);
+					System.out.println("접속 매장 코드:"+user);
 					break;
 				} else {
 					this.logCnt = 0;
@@ -107,8 +111,7 @@ public class DBcon {
 	}
 
 	
-	
-	// 재고조회 - 전체 매장 재고 조회
+	// 재고관리 - 재고조회 (전체 매장 재고 조회)
 	public void searchStock(JTable table, String no) {
 		this.table = table;
 		this.no = no;
@@ -146,7 +149,7 @@ public class DBcon {
 		return price; // 해당 품번 판매단가 반환
 	}
 
-	// 판매등록 - 상품 전체의 컬러 combobox list에 추가
+	// 판매관리 - 판매등록 - 색상 (상품 전체의 컬러 combobox list에 추가)
 	public void combo_color(JComboBox<String> combo) {
 		String query = "select distinct p_color from product";
 
@@ -171,12 +174,13 @@ public class DBcon {
 		String query = "select sa_no, sa_group, sales.p_code, p_price, sa_qty, sa_price\r\n" + 
 				"from sales, product\r\n" + 
 				"where sales.p_code = product.p_code\r\n" + 
-				"and sa_date = '18/11/01' and s_code = '"+ user +"' \r\n" + 
+				"and sa_date = '"+ currDate +"' and s_code = '"+ user +"' \r\n" + 
 				"order by sa_no"; 
 
 		try {
 			pstmt = con.prepareStatement(query);
 			rs = pstmt.executeQuery();
+			totalPrice = 0;
 
 			while (rs.next()) {
 				String salesNumber = rs.getString(1);
@@ -211,7 +215,7 @@ public class DBcon {
 		return totalPrice; // 총판매금액
 	}
 	
-	// 판매등록 - 조회
+	// 판매등록 - 조회btn 
 	public void pro_select(String no, String color, String size) {
 		String query = "select p_price, p_qty, product.p_code from product, stock\r\n"
 				+ "where product.p_code=stock.p_code \r\n" + "and s_code='" + this.user + "'\r\n" + "and p_no='" + no
@@ -240,37 +244,104 @@ public class DBcon {
 		return qty; // 해당 품번 판매단가 반환
 	}
 	
-	// 판매등록 - 등록
-	// +) insert 
-	public void pro_reg(JTable table, String group, String s_qty, String s_price) {
-		this.table = table;
+	// 판매등록 - 등록btn
+	int n = 100;	//***
+	public void pro_reg(JTable totalTable, JTable salesTable, String group, String productPrice, String s_qty, String s_price) {
+		this.table = salesTable;
 		if (group.equals("판매")) {
 			this.groupInt = 1;
 		} else {
 			this.groupInt = 2;
 			s_price = "-"+s_price;
+			productPrice = "-"+productPrice;
 		}
 		this.code = no + color + size ;
 		
-		System.out.println(groupInt);
+		System.out.println("단가:"+productPrice);
+
 		
-//		String query = "insert into sales values('"+ "181101"+user+"088" +"',sa_no_seq3.nextval,\r\n" + 
-		String query = "insert into sales values('"+ "181101"+user+"089" +"',\r\n" + 
-				"to_date('2018-11-01','yyyy-mm-dd'),\r\n" + "89" +
-				",'"+ user +"',"+ groupInt +",'"+ code +"',"+s_qty+","+s_price+")";
+//		sa_no_seq3.nextval
+		String query = "insert into sales values('"+ dateCode+user+n +"',\r\n" + 
+				"to_date('"+currDate+"','yyyy-mm-dd'),\r\n" + n +
+				",'"+ user +"',"+ groupInt +",'"+ code +"',"+ productPrice+"*"+s_qty +","+s_qty+ "," + s_price + ")";
 
 		try {
 			pstmt = con.prepareStatement(query);
 			rs = pstmt.executeQuery();
 			
 			salesStatusSearch(table);
+				
+			clear(totalTable);
+			Object data[] = { currDate, totalPrice };
+			DefaultTableModel model = (DefaultTableModel) totalTable.getModel();
+			model.addRow(data);
 
+			n++; //***
 			System.out.println("pro_reg 성공");
 		} catch (SQLException e) {
 			System.out.println("pro_reg 오류");
 			e.printStackTrace();
 		}
 	}
+	
+	// 판매현황 - 판매등록 - 삭제btn
+	public void salesDelete(String salesNum) {
+		//String salesCode = sdf.format(currDate2) + user;
+		String salesCode = dateCode + user;
+		
+		System.out.println(salesNum);
+		
+		if (salesNum.length() == 1) {
+			salesCode = salesCode + "00" + salesNum;
+		} else if (salesNum.length() == 2) {
+			salesCode = salesCode + "0" + salesNum;
+		} else {
+			salesCode = salesCode + salesNum;
+		}
+		
+		System.out.println("삭제:" + salesCode);
+		
+		String query = "delete from sales where sa_code = '" + salesCode + "'";
+
+		try {
+			pstmt = con.prepareStatement(query);
+			rs = pstmt.executeQuery();
+			
+			System.out.println("salesDelete 성공");
+		} catch (SQLException e) {
+			System.out.println("salesDelete 오류");
+			e.printStackTrace();
+		}
+	}
+	
+	// 판매관리 - 판매현황 - 조회btn
+	public void searchStatus(JTable table, String date) {
+		this.table = table;
+		int totalSalesPrice = 0;
+		
+		String query = "select to_char(sa_date,'yyyy-mm-dd'), to_char(sa_date,'day'), sum(sa_qty), sum(ps_price), sum(sa_price)\r\n" + 
+				"from sales where s_code = '"+ user +"'\r\n" + 
+				"and sa_code like '"+ date +"%'\r\n" + 
+				"group by sa_date order by sa_date";
+
+		try {
+			pstmt = con.prepareStatement(query);
+			rs = pstmt.executeQuery();
+						
+			while (rs.next()) {
+				totalSalesPrice += rs.getInt(5);
+				
+				Object data[] = { rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), totalSalesPrice};
+				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				model.addRow(data);
+			}
+			System.out.println("searchStatus 성공");
+		} catch (SQLException e) {
+			System.out.println("searchStatus 오류");
+			e.printStackTrace();
+		}
+	}
+	
 
 	// JTable 필드 초기화
 	public void clear(JTable table) {
