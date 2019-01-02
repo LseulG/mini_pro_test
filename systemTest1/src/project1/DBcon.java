@@ -21,7 +21,8 @@ public class DBcon {
 	int logCnt; // login
 	int statusCnt = 1;
 	int price, qty, groupInt; // pro_select
-	int totalPrice = 0;
+	int dayTotalPrice = 0;
+	int monthTotalPrice = 0;
 
 	//LocalDate currDate = LocalDate.now();
 	LocalDate currDate = LocalDate.of(2018, 11, 1);
@@ -38,7 +39,7 @@ public class DBcon {
 
 	// DB 연결
 	public void connect() {
-		String URL = "jdbc:oracle:thin:@localhost:1521:orcl";
+		String URL = "jdbc:oracle:thin:@localhost:1521:xe";
 		String ID = "project2";
 		String PW = "pro2";
 
@@ -180,7 +181,7 @@ public class DBcon {
 		try {
 			pstmt = con.prepareStatement(query);
 			rs = pstmt.executeQuery();
-			totalPrice = 0;
+			dayTotalPrice = 0;
 
 			while (rs.next()) {
 				String salesNumber = rs.getString(1);
@@ -199,7 +200,7 @@ public class DBcon {
 				this.no = productCode.substring(0, 7);
 				this.color = productCode.substring(7, 9);
 				this.size = productCode.substring(9);
-				totalPrice += salesPrice;
+				dayTotalPrice += salesPrice;
 
 				Object data[] = { salesNumber, groupStr, no, color, size, productPrice, productQty, salesPrice };
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -212,7 +213,7 @@ public class DBcon {
 		}
 	}
 	public Integer getTotalPrice() {
-		return totalPrice; // 총판매금액
+		return dayTotalPrice; // 총판매금액
 	}
 	
 	// 판매등록 - 조회btn 
@@ -272,7 +273,7 @@ public class DBcon {
 			salesStatusSearch(table,currDate);
 				
 			clear(totalTable);
-			Object data[] = { currDate, totalPrice };
+			Object data[] = { currDate, dayTotalPrice };
 			DefaultTableModel model = (DefaultTableModel) totalTable.getModel();
 			model.addRow(data);
 
@@ -286,7 +287,6 @@ public class DBcon {
 	
 	// 판매현황 - 판매등록 - 삭제btn
 	public void salesDelete(String salesNum) {
-		//String salesCode = sdf.format(currDate2) + user;
 		String salesCode = dateCode + user;
 		
 		System.out.println(salesNum);
@@ -307,6 +307,8 @@ public class DBcon {
 			pstmt = con.prepareStatement(query);
 			rs = pstmt.executeQuery();
 			
+			salesStatusSearch(table,currDate);
+			
 			System.out.println("salesDelete 성공");
 		} catch (SQLException e) {
 			System.out.println("salesDelete 오류");
@@ -317,7 +319,7 @@ public class DBcon {
 	// 판매관리 - 판매현황 - 조회btn
 	public void searchStatus(JTable table, String date) {
 		this.table = table;
-		int totalSalesPrice = 0;
+		this.monthTotalPrice = 0;
 		
 		String query = "select to_char(sa_date,'yyyy-mm-dd'), to_char(sa_date,'day'), sum(sa_qty), sum(ps_price), sum(sa_price)\r\n" + 
 				"from sales where s_code = '"+ user +"'\r\n" + 
@@ -329,9 +331,11 @@ public class DBcon {
 			rs = pstmt.executeQuery();
 						
 			while (rs.next()) {
-				totalSalesPrice += rs.getInt(5);
+				//totalSalesPrice += rs.getInt(5);
+				this.monthTotalPrice += rs.getInt(5);
 				
-				Object data[] = { rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), totalSalesPrice};
+				//Object data[] = { rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), totalSalesPrice};
+				Object data[] = { rs.getString(1), rs.getString(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), monthTotalPrice};
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.addRow(data);
 			}
@@ -340,6 +344,9 @@ public class DBcon {
 			System.out.println("searchStatus 오류");
 			e.printStackTrace();
 		}
+	}
+	public Integer getMonthTotalPrice() {
+		return monthTotalPrice; // 총판매금액
 	}
 	
 
@@ -461,8 +468,6 @@ public class DBcon {
 			}
 			pstmt = con.prepareStatement(S_query);
 			rs = pstmt.executeQuery();
-
-
 
 
 		} catch (SQLException e) {

@@ -25,6 +25,7 @@ import javax.swing.table.TableColumnModel;
  * 매장 메뉴
  * 판매관리 - 판매등록
  * 
+ * 삭제 시 총 합계 수정 안됨....
  */
 
 public class SalesReg extends JPanel implements ActionListener{

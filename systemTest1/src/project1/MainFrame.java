@@ -143,6 +143,7 @@ public class MainFrame extends JFrame implements ActionListener{
 				// +)로그인 화면으로 이동
 				myDBcon.disconn();
 				dispose();
+				Start.main(null);
 			} 			
 		}
 	}

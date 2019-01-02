@@ -33,7 +33,7 @@ public class SalesStatus extends JPanel implements ActionListener{
 	String year[] = { "2018", "2019" };
 	String month[] = { "01","02","03","04","05","06","07","08","09","10","11","12"};
 	
-	String total = "1,406,100";
+	String total = "0";
 	
 	private void setDBcon(DBcon dbcon) {
 		myDBcon = dbcon;
@@ -123,6 +123,8 @@ public class SalesStatus extends JPanel implements ActionListener{
 		if(e.getSource() == btnSearch) {
 			myDBcon.clear(firstTab);
 			myDBcon.searchStatus(firstTab, date);
+			total = myDBcon.getMonthTotalPrice().toString();
+			totalLab.setText("총 실판매금액: " + total);
 			
 			// 테이블 클릭 시 이벤트
 			firstTab.addMouseListener(new MouseAdapter() {
