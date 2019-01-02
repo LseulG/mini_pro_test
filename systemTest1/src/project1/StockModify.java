@@ -5,7 +5,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.border.Border;
+
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
@@ -26,26 +26,26 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 
-public class ProdInfoModify extends JPanel {
+public class StockModify extends JPanel{
 	private JTextField ProNoTextField_1;
 	private JTextField OriTextField;
 	private JTextField ChangeTextField;
 	private JTextField ProNoTextField_2;
 
-	private DBcon myDBcon;
 	private JTextField S_Size_Field;
 	private JTextField M_Size_Field;
 	private JTextField L_Size_Field;
 	private JTextField XL_Size_Field;
+
+	private DBcon myDBcon;
 	
 	private void setDBcon(DBcon dbcon) {
 		myDBcon = dbcon;
 	}
-
-	public ProdInfoModify(DBcon dbcon) {
+	
+	public StockModify(DBcon dbcon) {
 		setDBcon(dbcon);
 		setLayout(null);
 

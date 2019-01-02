@@ -16,14 +16,16 @@ import javax.swing.JPanel;
 public class MainFrame extends JFrame implements ActionListener{
 
 	private DBcon myDBcon;
+	String userCode;
 	
 	JPanel contentPane;
 	JMenu mSalesmenu, mStockmenu,mAdmMenu,mLogoutMenu;
-	JMenuItem mSalesReg, mSalesStatus,mStock, mLogout,mNewProdReg,mProdInfoModify,mAccount;
+	JMenuItem mSalesReg, mSalesStatus,mStock,mStockModify, mLogout,mNewProdReg,mProdInfoModify,mAccount;
 	CardLayout card = new CardLayout();
 	
 	public MainFrame(DBcon dbcon) {
 		setDBcon(dbcon);
+		userCode = myDBcon.getUser().substring(0, 1);
 		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
@@ -45,37 +47,63 @@ public class MainFrame extends JFrame implements ActionListener{
 		contentPane.setLayout(card);
 
 		JMenuBar menuBar = new JMenuBar();
-		setJMenuBar(menuBar);
+		setJMenuBar(menuBar);	
+		
+		System.out.println(userCode);
 
 		// menu_1
-		mSalesmenu = new JMenu("판매관리");
-		menuBar.add(mSalesmenu);
-
-		mSalesReg = new JMenuItem("판매등록");
-		mSalesmenu.add(mSalesReg);
-
-		mSalesStatus = new JMenuItem("판매현황");
-		mSalesmenu.add(mSalesStatus);
+		if(userCode.equals("S")) {
+			mSalesmenu = new JMenu("판매관리");
+			menuBar.add(mSalesmenu);
+	
+			mSalesReg = new JMenuItem("판매등록");
+			mSalesmenu.add(mSalesReg);
+			mSalesReg.addActionListener(this);
+			contentPane.add("SalesReg", new SalesReg(myDBcon));
+	
+			mSalesStatus = new JMenuItem("판매현황");
+			mSalesmenu.add(mSalesStatus);
+			mSalesStatus.addActionListener(this);
+			contentPane.add("SalesStatus", new SalesStatus(myDBcon));
+		}
 
 		// menu_2
 		mStockmenu = new JMenu("재고관리");
-		menuBar.add(mStockmenu);
-		
+		menuBar.add(mStockmenu);	
+
+		if(userCode.equals("H")) {
+			mStockModify = new JMenuItem("재고 등록/수정");
+			mStockmenu.add(mStockModify);	
+			mStockModify.addActionListener(this);
+			contentPane.add("StockModify", new StockModify(myDBcon));
+		}
+			
 		mStock = new JMenuItem("재고조회");
-		mStockmenu.add(mStock);		
+		mStockmenu.add(mStock);	
+		mStock.addActionListener(this);
+		contentPane.add("Stock", new StockSearch(myDBcon));
+			
 		
 		// menu_3
-		mAdmMenu = new JMenu("관리자메뉴");
-		menuBar.add(mAdmMenu);
-
-		mNewProdReg = new JMenuItem("신상품 등록");
-		mAdmMenu.add(mNewProdReg);
-		
-		mProdInfoModify = new JMenuItem("상품정보 수정");
-		mAdmMenu.add(mProdInfoModify);
-		
-		mAccount = new JMenuItem("계정 생성/조회");
-		mAdmMenu.add(mAccount);
+		if(userCode.equals("H")) {
+			mAdmMenu = new JMenu("관리자메뉴");
+			menuBar.add(mAdmMenu);
+	
+			mNewProdReg = new JMenuItem("신상품 등록");
+			mAdmMenu.add(mNewProdReg);
+			mNewProdReg.addActionListener(this);
+			contentPane.add("NewProdReg", new NewProReg(myDBcon));
+			
+			mProdInfoModify = new JMenuItem("상품단가 수정");
+			mAdmMenu.add(mProdInfoModify);
+			mProdInfoModify.addActionListener(this);
+			contentPane.add("ProdInfoModify", new ProdInfoModify(myDBcon));
+			
+			mAccount = new JMenuItem("계정 생성/조회");
+			mAdmMenu.add(mAccount);
+			mAccount.addActionListener(this);
+			contentPane.add("Account", new AccountLookupCreate(myDBcon));
+		}
 		
 		// menu_4
 		mLogoutMenu = new JMenu("로그아웃");
@@ -83,26 +111,9 @@ public class MainFrame extends JFrame implements ActionListener{
 
 		mLogout = new JMenuItem("로그아웃");
 		mLogoutMenu.add(mLogout);
-
-
-		// contentPane.add("패널별명", new 패널());
-		contentPane.add("SalesReg", new SalesReg(myDBcon)); //판매등록
-		contentPane.add("SalesStatus", new SalesStatus(myDBcon)); //판매현황
-		contentPane.add("Stock", new StockSearch(myDBcon)); //재고조회
-		contentPane.add("NewProdReg", new NewProReg(myDBcon)); //신상품등록
-		contentPane.add("ProdInfoModify", new ProdInfoModify(myDBcon)); // 상품정보 수정 
-		contentPane.add("Account", new AccountLookupCreate(myDBcon)); // 계정조희 및 생성
-
-		add(contentPane);
-
-		mSalesReg.addActionListener(this);
-		mSalesStatus.addActionListener(this);
-		mStock.addActionListener(this);
-		mNewProdReg.addActionListener(this);
-		mProdInfoModify.addActionListener(this);
-		mAccount.addActionListener(this);
 		mLogout.addActionListener(this);
 
+		add(contentPane);
 		setVisible(true);
 	}
 	
@@ -115,6 +126,8 @@ public class MainFrame extends JFrame implements ActionListener{
 			card.show(contentPane, "SalesReg");
 		} else if (e.getSource() == mSalesStatus) {
 			card.show(contentPane, "SalesStatus");
+		} else if (e.getSource() == mStockModify) {	
+			card.show(contentPane, "StockModify");
 		} else if (e.getSource() == mStock) {
 			card.show(contentPane, "Stock");
 		} else if (e.getSource() == mNewProdReg) {
