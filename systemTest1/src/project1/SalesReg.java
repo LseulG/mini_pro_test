@@ -188,17 +188,47 @@ public class SalesReg extends JPanel implements ActionListener{
 			
 			String productPrice = myDBcon.getProductPrice().toString();
 			String stockQuantity = myDBcon.getStockQuantity().toString();
+			salesQuantity = myDBcon.getSalesQuantity().toString();
 			
 			productPriceField.setText(productPrice);	
 			stockQuantityField.setText(stockQuantity);
-			salesQuantityField.setText("1");	
+			salesQuantityField.setText(salesQuantity);	
 			salesPriceField.setText(productPrice);	
 		}
 		
 		// 등록 버튼 action
 		if (e.getSource() == registrationButton) {
-			myDBcon.clear(secTable);
-			myDBcon.registerSales(firstTable,salesDiv,salesQuantity,salesPrice);
+			String productPrice = myDBcon.getProductPrice().toString();
+			
+			if(productPrice.equals("0")) {
+				// 조회한 상품이 없을 경우
+				JOptionPane.showMessageDialog(null, "상품 조회 후 등록이 가능합니다.");
+			} else if (salesQuantity.equals("0")){
+				JOptionPane.showMessageDialog(null, "상품 조회 후 등록이 가능합니다.");
+			} else {
+				// 조회한 상품이 있을 경우
+				myDBcon.clear(secTable);
+				myDBcon.searchProduct(productNo,productColor,productSize); // 상품조회 메서드 호출
+				productPrice = myDBcon.getProductPrice().toString();
+				
+				if(productPrice.equals("0")) {
+					// 등록 상품 정보가 수정되어 상품을 찾을 수 없을 경우 - 테이블만 보여주기
+					myDBcon.searchSalesStatus(secTable, currDate); // 판매현황 테이블 
+				} else {
+					// 등록 가능
+					myDBcon.registerSales(firstTable,salesDiv,salesQuantity,salesPrice);
+					
+					// 필드 초기화 
+					divCombo.setSelectedIndex(0);
+					productNoField.setText("");
+					colorCombo.setSelectedIndex(0);
+					sizeCombo.setSelectedIndex(0);
+					productPriceField.setText("");	
+					stockQuantityField.setText("");
+					salesQuantityField.setText("");	
+					salesPriceField.setText("");
+				}
+			}
 		}	
 		
 		// 삭제 버튼 action

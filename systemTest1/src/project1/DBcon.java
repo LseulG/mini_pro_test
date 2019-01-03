@@ -17,7 +17,7 @@ public class DBcon {
 	String loginUser; // checkLogin,getUser,searchSalesStatus,searchProduct
 	
 	String productNo, productColor, productSize; // searchSalesStatus
-	int productPrice, stockQuantity; // searchProduct, registerSales
+	int productPrice, stockQuantity, salesQuantity; // searchProduct, registerSales
 	String productCode; // searchProduct, registerSales
 
 	int dayTotalPrice = 0; 
@@ -25,7 +25,7 @@ public class DBcon {
 	
 	JTable tableSave; // 테이블 저장소
 	
-	int statusCnt = 1;
+	int queryResultCount = 0; // 쿼리문 결과 있는지1 없는지0
 
 	//LocalDate currDate = LocalDate.now();
 	LocalDate currDate = LocalDate.of(2018, 11, 1);
@@ -42,7 +42,8 @@ public class DBcon {
 
 	// DB 연결
 	public void connect() {
-		String URL = "jdbc:oracle:thin:@localhost:1521:orcl";
+		String URL = "jdbc:oracle:thin:@localhost:1521:xe";
+		//String URL = "jdbc:oracle:thin:@localhost:1521:orcl";
 		String ID = "project2";
 		String PW = "pro2";
 
@@ -104,9 +105,9 @@ public class DBcon {
 					this.loginCount = 0;
 				}
 			}
-			System.out.println("login query 성공");
+			System.out.println("checkLogin 성공");
 		} catch (SQLException e) {
-			System.out.println("login query 오류");
+			System.out.println("checkLogin 오류");
 			e.printStackTrace();
 		}
 	}
@@ -144,6 +145,7 @@ public class DBcon {
 	public void searchSalesStatus(JTable statusTable, Object date) {
 		this.tableSave = statusTable;
 		String salesDivText;
+		queryResultCount = 0;
 		
 		String query = "select sa_no, sa_group, sales.p_code, p_price, sa_qty, sa_price\r\n" 
 				+ "from sales, product\r\n" 
@@ -157,6 +159,8 @@ public class DBcon {
 			dayTotalPrice = 0;
 
 			while (rs.next()) {
+				queryResultCount = 1;
+				
 				String salesNumber = rs.getString(1);
 				int salesDivCode = rs.getInt(2);
 				String productCode = rs.getString(3);
@@ -196,6 +200,8 @@ public class DBcon {
 	// 판매관리 - 판매등록 - 조회 버튼
 	// 상품 조회 및 판매단가,재고수량,코드 저장
 	public void searchProduct(String productNo, String productColor, String productSize) {
+		queryResultCount = 0;
+		
 		String query = "select p_price, p_qty, product.p_code from product, stock\r\n"
 				+ "where product.p_code=stock.p_code \r\n" 
 				+ "and s_code='" + this.loginUser + "'\r\n" + "and p_no='" + productNo
@@ -206,11 +212,23 @@ public class DBcon {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
+				queryResultCount = 1;
 				this.productPrice = rs.getInt(1);
 				this.stockQuantity = rs.getInt(2);
 				this.productCode = rs.getString(3);
 			}
-			System.out.println("searchProduct 성공");
+			
+			if(queryResultCount == 0) {
+				JOptionPane.showMessageDialog(null, "해당 상품이 없습니다.");
+				
+				this.productPrice = 0;
+				this.stockQuantity = 0;
+				this.salesQuantity = 0;
+				
+			} else {
+				this.salesQuantity = 1;
+				System.out.println("searchProduct 성공");				
+			}
 		} catch (SQLException e) {
 			System.out.println("searchProduct 오류");
 			e.printStackTrace();
@@ -222,6 +240,10 @@ public class DBcon {
 	public Integer getStockQuantity() {
 		return stockQuantity; // 재고수량 SalesReg에 반환
 	}
+	public Integer getSalesQuantity() {
+		return salesQuantity; // 판매수량 기본값 SalesReg에 반환
+	}
+	
 	
 	// 판매관리 - 판매등록 - 등록 버튼
 	// 상품 판매,반품 데이터 삽입
@@ -307,6 +329,7 @@ public class DBcon {
 	public void searchStatus(JTable dayTable, String selectedDate) {
 		this.tableSave = dayTable;
 		this.monthTotalPrice = 0;
+		queryResultCount = 0;
 		
 		String query = "select to_char(sa_date,'yyyy-mm-dd'), to_char(sa_date,'day'), \r\n"
 				+"sum(sa_qty), sum(ps_price), sum(sa_price)\r\n" + 
@@ -319,6 +342,7 @@ public class DBcon {
 			rs = pstmt.executeQuery();
 						
 			while (rs.next()) {
+				queryResultCount = 1;
 				String date = rs.getString(1);
 				String day = rs.getString(2);
 				int salesQuantity = rs.getInt(3);
@@ -330,7 +354,12 @@ public class DBcon {
 				DefaultTableModel newModel = (DefaultTableModel) dayTable.getModel();
 				newModel.addRow(newData);
 			}
-			System.out.println("searchStatus 성공");
+			
+			if(queryResultCount == 0) {
+				JOptionPane.showMessageDialog(null, "조회된 결과가 없습니다.");
+			} else {
+				System.out.println("searchStatus 성공");
+			}
 		} catch (SQLException e) {
 			System.out.println("searchStatus 오류");
 			e.printStackTrace();
@@ -346,6 +375,7 @@ public class DBcon {
 	// 해당 품번 재고 조회
 	public void searchStock(JTable stockTable, String productNo) {
 		this.tableSave = stockTable;
+		queryResultCount = 0;
 
 		String query = "select p_no, p_price, p_color, p_size, store.s_code, s_name, s_phone, stock.p_qty\r\n"
 				+ "from product, stock, store\r\n" + "where product.p_code=stock.p_code\r\n"
@@ -356,6 +386,8 @@ public class DBcon {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
+				queryResultCount = 1;
+				
 				this.productPrice = rs.getInt(2);
 				String productColor = rs.getString(3);
 				String productSize = rs.getString(4);
@@ -368,7 +400,13 @@ public class DBcon {
 				DefaultTableModel newModel = (DefaultTableModel) stockTable.getModel();
 				newModel.addRow(newData);
 			}
-			System.out.println("searchStock 성공");
+			
+			if(queryResultCount == 0) {
+				JOptionPane.showMessageDialog(null, "해당 상품이 없습니다.");
+				this.productPrice = 0; // 판매단가 초기화
+			} else {
+				System.out.println("searchStock 성공");
+			}
 		} catch (SQLException e) {
 			System.out.println("searchStock 오류");
 			e.printStackTrace();
