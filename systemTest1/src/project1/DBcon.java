@@ -39,7 +39,7 @@ public class DBcon {
 
 	// DB ¿¬°á
 	public void connect() {
-		String URL = "jdbc:oracle:thin:@localhost:1521:xe";
+		String URL = "jdbc:oracle:thin:@localhost:1521:orcl";
 		String ID = "project2";
 		String PW = "pro2";
 
