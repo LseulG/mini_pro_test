@@ -90,7 +90,7 @@ public class ProdInfoModify extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				String price = "0";
 				myDBcon.searchProduct(ProNoTextField_1.getText());
-				price = myDBcon.getPrice().toString();
+				price = myDBcon.getProductPrice().toString();
 				OriTextField.setText(price);
 			}
 

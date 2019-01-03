@@ -100,11 +100,11 @@ public class StockSearch extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnSearch) {
-			String no = txtCode.getText();
+			String productNo = txtCode.getText();
 			
 			myDBcon.clear(firstTab);
-			myDBcon.searchStock(firstTab,no);
-			price = myDBcon.getPrice().toString();
+			myDBcon.searchStock(firstTab,productNo);
+			price = myDBcon.getProductPrice().toString();
 			lblPriceNum.setText(price);
 		}
 	}

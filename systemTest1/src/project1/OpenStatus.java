@@ -2,8 +2,6 @@ package project1;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
@@ -52,8 +50,7 @@ public class OpenStatus extends JDialog {
 			firstTab.getTableHeader().setReorderingAllowed(false); // 테이블 열 고정
 			firstSc = new JScrollPane(firstTab);
 			firstSc.setPreferredSize(new Dimension(450, 80));
-			contentPanel.add(firstSc);
-			
+			contentPanel.add(firstSc);			
 			
 			// 2
 			String secTabName[] = { "번호", "구분", "품번", "색상", "사이즈", "판매단가", "수량", "실판매금액"};
@@ -67,16 +64,16 @@ public class OpenStatus extends JDialog {
 			secTab.getTableHeader().setReorderingAllowed(false); // 테이블 열 고정
 			secSc = new JScrollPane(secTab);
 			contentPanel.add(secSc);
-			dbcon.salesStatusSearch(secTab, selectedDate);
+			dbcon.searchSalesStatus(secTab, selectedDate);
 			
 				//총판매금액 수정
-			int totalPrice = dbcon.getTotalPrice();		
+			int totalPrice = dbcon.getDayTotalPrice();		
 			myDBcon.clear(firstTab);
 			Object data[] = { selectedDate, totalPrice };
 			DefaultTableModel model = (DefaultTableModel) firstTab.getModel();
 			model.addRow(data);
 			
-			// table center align
+			// 테이블 가운데 정렬
 			DefaultTableCellRenderer tCellRenderer = new DefaultTableCellRenderer();
 			tCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -85,20 +82,13 @@ public class OpenStatus extends JDialog {
 
 			for (int i = 0; i < t1ColModel.getColumnCount(); i++)
 				t1ColModel.getColumn(i).setCellRenderer(tCellRenderer);
-
 			for (int i = 0; i < t2ColModel.getColumnCount(); i++)
 				t2ColModel.getColumn(i).setCellRenderer(tCellRenderer);
 		}		
 		
 		setModal(true);
 		setVisible(true);
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent windowEvent) {
-				System.exit(0);
-			}
-		});
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 
 }

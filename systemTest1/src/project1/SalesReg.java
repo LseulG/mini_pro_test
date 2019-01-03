@@ -29,24 +29,25 @@ import javax.swing.table.TableColumnModel;
  */
 
 public class SalesReg extends JPanel implements ActionListener{
-	private DefaultTableModel firstTabModel, secTabModel;
-	private JTable firstTab, secTab;
+	private DefaultTableModel firstTableModel, secTableModel;	
+	private JTable firstTable, secTable;	
 	private JScrollPane firstSc, secSc;
-	private JLabel lab, lblDiv, lblCode, lblColor, lblSize, 
-			lblPrice, lblQty, lblSqty, lblSprice;
-	private JTextField txtCode, txtPrice, txtQty, txtSqty, txtSprice;
-	private JButton btnSearch, btnReg, btnDelete;
-	private JComboBox<String> divCB, colorCB, sizeCB;
+	private JLabel titleLabel, divLabel, noLabel, colorLabel, sizeLabel, 
+				productPriceLabel, stockQuantityLabel, salesQuantityLabel, salesPriceLabel;
+	private JTextField productNoField, productPriceField, stockQuantityField, 
+				salesQuantityField, salesPriceField;
+	private JButton searchButton, registrationButton, deleteButton;
+	private JComboBox<String> divCombo, colorCombo, sizeCombo;
 	
 	private DBcon myDBcon;
 	
-	String divS[] = {"판매","반품"};
-	String sizeS[] = {"S","M","L","XL"};	
-	//LocalDate currDate = LocalDate.now();
+	String divComboList[] = {"판매","반품"};
+	String sizeComboList[] = {"S","M","L","XL"};	
+	//LocalDate currDate = LocalDate.now(); 오늘 날짜
 	LocalDate currDate = LocalDate.of(2018, 11, 1);
 	
 	String code = null;
-	int totalPrice = 0;
+	int dayTotalPrice = 0;
 	
 	private void setDBcon(DBcon dbcon) {
 		myDBcon = dbcon;
@@ -56,165 +57,164 @@ public class SalesReg extends JPanel implements ActionListener{
 		setDBcon(dbcon);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		// 1
+		// 1 - 제목
 		JPanel p1 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) p1.getLayout();
 		flowLayout.setHgap(10);
 		flowLayout.setVgap(10);
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		add(p1);
-		lab = new JLabel("판매등록");
-		lab.setFont(new Font("굴림", Font.PLAIN, 18));
-		p1.add(lab);
+		titleLabel = new JLabel("판매등록");
+		titleLabel.setFont(new Font("굴림", Font.PLAIN, 18));
+		p1.add(titleLabel);
 		
-		// 2
-		String firstTabName[] = { "판매일자", "총판매금액" };
-		Object firstData[][] = { { currDate, totalPrice } };
-		firstTabModel = new DefaultTableModel(firstData, firstTabName){
+		// 2 - 판매일자, 총판매금액
+		String firstTableName[] = { "판매일자", "총판매금액" };
+		Object firstTableData[][] = { { currDate, dayTotalPrice } };
+		firstTableModel = new DefaultTableModel(firstTableData, firstTableName){
 			public boolean isCellEditable(int row, int col) {
 				return false; // 테이블 수정 못하게
 			}
 		};
-		firstTab = new JTable(firstTabModel);
-		firstTab.getTableHeader().setReorderingAllowed(false); // 테이블 열 고정
-		firstSc = new JScrollPane(firstTab);
+		firstTable = new JTable(firstTableModel);
+		firstTable.getTableHeader().setReorderingAllowed(false); // 테이블 열 고정
+		firstSc = new JScrollPane(firstTable);
 		firstSc.setPreferredSize(new Dimension(450, 80));
 		add(firstSc);
 		
-		// 3
+		// 3 - 상품 정보 선택 및 입력
 		JPanel panel = new JPanel();	add(panel);
 		JPanel p2 = new JPanel();
 		panel.add(p2);
 		p2.setLayout(new GridLayout(2, 9, 0, 5));
 		
-			// 1행
-		lblDiv = new JLabel(" 구분");		p2.add(lblDiv);		
-		divCB = new JComboBox<String>(divS);
-		p2.add(divCB);
+			// 1행 - 상품 조회
+		divLabel = new JLabel(" 구분");		p2.add(divLabel);		
+		divCombo = new JComboBox<String>(divComboList);
+		p2.add(divCombo);
 		
-		lblCode = new JLabel(" 품번");	p2.add(lblCode);		
-		txtCode = new JTextField();
-		p2.add(txtCode);
+		noLabel = new JLabel(" 품번");	p2.add(noLabel);		
+		productNoField = new JTextField();
+		p2.add(productNoField);
 		
-		lblColor = new JLabel(" 색상"); 	p2.add(lblColor);		
-		colorCB = new JComboBox<String>();
-		dbcon.combo_color(colorCB);
-		p2.add(colorCB);
+		colorLabel = new JLabel(" 색상"); 	p2.add(colorLabel);		
+		colorCombo = new JComboBox<String>();
+		dbcon.listColorCombo(colorCombo); // 색상 콤보박스 연동 메서드 호출
+		p2.add(colorCombo);
 		
-		lblSize = new JLabel(" 사이즈");	p2.add(lblSize);		
-		sizeCB = new JComboBox<String>(sizeS);
-		p2.add(sizeCB);
+		sizeLabel = new JLabel(" 사이즈");	p2.add(sizeLabel);		
+		sizeCombo = new JComboBox<String>(sizeComboList);
+		p2.add(sizeCombo);
 		
-		btnSearch = new JButton("조회");
-		btnSearch.addActionListener(this);
-		p2.add(btnSearch);
+		searchButton = new JButton("조회");
+		searchButton.addActionListener(this);
+		p2.add(searchButton);
 		
-			// 2행
-		lblPrice = new JLabel(" 판매단가");	p2.add(lblPrice);		
-		txtPrice = new JTextField();
-		txtPrice.setText("0");
-		txtPrice.setEditable(false);
-		p2.add(txtPrice);
+			// 2행 - 상품 등록
+		productPriceLabel = new JLabel(" 판매단가");	p2.add(productPriceLabel);		
+		productPriceField = new JTextField("0");
+		productPriceField.setEditable(false); // 수정 불가
+		p2.add(productPriceField);
 		
-		lblQty = new JLabel(" 재고");	p2.add(lblQty);		
-		txtQty = new JTextField();
-		txtQty.setText("0");
-		txtQty.setEditable(false);
-		p2.add(txtQty);
+		stockQuantityLabel = new JLabel(" 재고");	p2.add(stockQuantityLabel);		
+		stockQuantityField = new JTextField("0");
+		stockQuantityField.setEditable(false); // 수정 불가
+		p2.add(stockQuantityField);
 		
-		lblSqty = new JLabel(" 수량");	p2.add(lblSqty);		
-		txtSqty = new JTextField();
-		txtSqty.setText("0");
-		p2.add(txtSqty);
+		salesQuantityLabel = new JLabel(" 수량");	p2.add(salesQuantityLabel);		
+		salesQuantityField = new JTextField("0");
+		p2.add(salesQuantityField);
 		
-		lblSprice = new JLabel(" 실판매금액");	p2.add(lblSprice);		
-		txtSprice = new JTextField();
-		txtSprice.setText("0");
-		p2.add(txtSprice);
+		salesPriceLabel = new JLabel(" 실판매금액");	p2.add(salesPriceLabel);		
+		salesPriceField = new JTextField("0");
+		p2.add(salesPriceField);
 		
-		btnReg = new JButton("등록");
-		btnReg.addActionListener(this);
-		p2.add(btnReg);
+		registrationButton = new JButton("등록");
+		registrationButton.addActionListener(this);
+		p2.add(registrationButton);
 				
 		// 4 - 클릭해서 삭제	
 		String secTabName[] = { "번호", "구분", "품번", "색상", "사이즈", "판매단가", "수량", "실판매금액"};
 		Object secData[][] = new Object[0][8];
-		secTabModel = new DefaultTableModel(secData, secTabName){
+		secTableModel = new DefaultTableModel(secData, secTabName){
 			public boolean isCellEditable(int row, int col) {
 				return false; // 테이블 수정 못하게
 			}
 		};
-		secTab = new JTable(secTabModel);
-		secTab.getTableHeader().setReorderingAllowed(false); // 테이블 열 고정
-		secSc = new JScrollPane(secTab);
+		secTable = new JTable(secTableModel);
+		secTable.getTableHeader().setReorderingAllowed(false); // 테이블 열 고정
+		secSc = new JScrollPane(secTable);
 		add(secSc);		
-		dbcon.salesStatusSearch(secTab, currDate);
+		dbcon.searchSalesStatus(secTable, currDate); // 판매현황 테이블 
 		
-			//총판매금액 수정
-		totalPrice = dbcon.getTotalPrice();		
-		myDBcon.clear(firstTab);
-		Object data[] = { currDate, totalPrice };
-		DefaultTableModel model = (DefaultTableModel) firstTab.getModel();
-		model.addRow(data);
+			//총판매금액 수정, firstTable 업데이트
+		dayTotalPrice = dbcon.getDayTotalPrice();		
+		myDBcon.clear(firstTable);
+		Object newData[] = { currDate, dayTotalPrice };
+		DefaultTableModel newModel = (DefaultTableModel) firstTable.getModel();
+		newModel.addRow(newData);
 		
 		JPanel p3 = new JPanel();
 		add(p3);		
-		btnDelete = new JButton("삭제");
-		btnDelete.addActionListener(this);
-		p3.add(btnDelete);
+		deleteButton = new JButton("삭제");
+		deleteButton.addActionListener(this);
+		p3.add(deleteButton);
 
-		// table center align
+		// 테이블 가운데 정렬
 		DefaultTableCellRenderer tCellRenderer = new DefaultTableCellRenderer();
 		tCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-		TableColumnModel t1ColModel = firstTab.getColumnModel();
-		TableColumnModel t2ColModel = secTab.getColumnModel();
+		TableColumnModel t1ColModel = firstTable.getColumnModel();
+		TableColumnModel t2ColModel = secTable.getColumnModel();
 
 		for (int i = 0; i < t1ColModel.getColumnCount(); i++)
 			t1ColModel.getColumn(i).setCellRenderer(tCellRenderer);
-
 		for (int i = 0; i < t2ColModel.getColumnCount(); i++)
 			t2ColModel.getColumn(i).setCellRenderer(tCellRenderer);
 	}
 
-
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		String group = (String)divCB.getSelectedItem();
-		String no = txtCode.getText();
-		String color = (String)colorCB.getSelectedItem();
-		String size = (String)sizeCB.getSelectedItem();
-		String s_qty = txtSqty.getText();
-		String s_price = txtSprice.getText();
+		String salesDiv = (String)divCombo.getSelectedItem();
+		String productNo = productNoField.getText();
+		String productColor = (String)colorCombo.getSelectedItem();
+		String productSize = (String)sizeCombo.getSelectedItem();
+		String salesQuantity = salesQuantityField.getText();
+		String salesPrice = salesPriceField.getText();
 		
-		
-		if (e.getSource() == btnSearch) {			//조회
-			myDBcon.pro_select(no,color,size);
+		// 조회 버튼 action
+		if (e.getSource() == searchButton) {
+			myDBcon.searchProduct(productNo,productColor,productSize); // 상품조회 메서드 호출
 			
-			//판매단가, 재고 가져오기 +)상품코드가져오기
-			String p_price = myDBcon.getPrice().toString();
-			String qty = myDBcon.getQty().toString();
+			String productPrice = myDBcon.getProductPrice().toString();
+			String stockQuantity = myDBcon.getStockQuantity().toString();
 			
-			txtPrice.setText(p_price);	txtQty.setText(qty);
-			txtSqty.setText("1");	txtSprice.setText(p_price);	
+			productPriceField.setText(productPrice);	
+			stockQuantityField.setText(stockQuantity);
+			salesQuantityField.setText("1");	
+			salesPriceField.setText(productPrice);	
 		}
 		
-		if (e.getSource() == btnReg) {			//등록
-			String p_price = myDBcon.getPrice().toString();
-			myDBcon.clear(secTab);
-			myDBcon.pro_reg(firstTab, secTab,group,p_price,s_qty,s_price);
+		// 등록 버튼 action
+		if (e.getSource() == registrationButton) {
+			myDBcon.clear(secTable);
+			myDBcon.registerSales(firstTable,salesDiv,salesQuantity,salesPrice);
 		}	
 		
-		if (e.getSource() == btnDelete) {			//삭제
-			int row = secTab.getSelectedRow();
+		// 삭제 버튼 action
+		if (e.getSource() == deleteButton) {
+			int row = secTable.getSelectedRow(); // 선택한 행 가져오기
 			
-			if(secTab.getSelectedRow() > 0) {
-				String salesNum = (String) secTabModel.getValueAt(row,0);
-				myDBcon.salesDelete(salesNum);
+			if(secTable.getSelectedRow() > 0) {
+				// 선택한 행이 있을 경우
+				String deleteSalesNum = (String) secTableModel.getValueAt(row,0);
+				int deleteSalesPrice = (int) secTableModel.getValueAt(row,7);
 				
-				secTabModel.removeRow(secTab.getSelectedRow());
+				myDBcon.salesDelete(firstTable, deleteSalesNum, deleteSalesPrice);
+				
+				secTableModel.removeRow(secTable.getSelectedRow());
 			} else {
+				// 선택한 행이 없을 경우
 				JOptionPane.showMessageDialog(null,"삭제할 행을 클릭하세요.");
 			}			
 		}

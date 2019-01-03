@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.time.LocalDate;
 import java.awt.event.MouseAdapter;
 
 import javax.swing.BoxLayout;
@@ -20,29 +19,29 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
-public class SalesStatus extends JPanel implements ActionListener{
+public class SalesStatus extends JPanel implements ActionListener {
 	private JLabel lab, dateLab, yearLabel, monthLabel, totalLab;
 	private DefaultTableModel firstTabModel;
 	private JTable firstTab;
 	private JScrollPane firstSc;
 	private JComboBox<String> yearComboBox, monthComboBox;
 	private JButton btnSearch;
-	
+
 	private DBcon myDBcon;
 
 	String year[] = { "2018", "2019" };
-	String month[] = { "01","02","03","04","05","06","07","08","09","10","11","12"};
-	
+	String month[] = { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" };
+
 	String total = "0";
-	
+
 	private void setDBcon(DBcon dbcon) {
 		myDBcon = dbcon;
 	}
-	
+
 	public SalesStatus(DBcon dbcon) {
 		setDBcon(dbcon);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
+
 		// 1
 		JPanel p1 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) p1.getLayout();
@@ -53,7 +52,7 @@ public class SalesStatus extends JPanel implements ActionListener{
 		lab = new JLabel("판매현황");
 		p1.add(lab);
 		lab.setFont(new Font("굴림", Font.PLAIN, 18));
-		 
+
 		// 2
 		JPanel p2 = new JPanel();
 		FlowLayout flowLayout_2 = (FlowLayout) p2.getLayout();
@@ -64,12 +63,11 @@ public class SalesStatus extends JPanel implements ActionListener{
 		dateLab.setBounds(100, 100, 450, 300);
 		p2.add(dateLab);
 
-			//* 데이터 있는 월만 가져오기 가능?
 		yearComboBox = new JComboBox<String>(year);
 		p2.add(yearComboBox);
 		yearLabel = new JLabel("년 ");
 		p2.add(yearLabel);
-		
+
 		monthComboBox = new JComboBox<String>(month);
 		p2.add(monthComboBox);
 		monthLabel = new JLabel("월 ");
@@ -78,7 +76,7 @@ public class SalesStatus extends JPanel implements ActionListener{
 		btnSearch = new JButton("조회");
 		btnSearch.addActionListener(this);
 		p2.add(btnSearch);
-		
+
 		// 3
 		String firstTabName[] = { "일자", "요일", "판매수량", "단가금액", "실판매금액", "누적금액(실판매)" };
 		Object firstData[][] = new Object[0][6];
@@ -92,19 +90,29 @@ public class SalesStatus extends JPanel implements ActionListener{
 		firstSc = new JScrollPane(firstTab);
 		add(firstSc);
 
-		// 4		
+			// 테이블 클릭 시 이벤트
+		firstTab.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					int row = firstTab.getSelectedRow();
+					Object selectedDate = firstTabModel.getValueAt(row, 0);
+					OpenStatus op = new OpenStatus(myDBcon, selectedDate);
+				}
+			}
+		});
+
+		// 4
 		JPanel p3 = new JPanel();
 		FlowLayout flowLayout_1 = (FlowLayout) p3.getLayout();
 		flowLayout_1.setHgap(20);
 		flowLayout_1.setAlignment(FlowLayout.RIGHT);
 		add(p3);
-		
-			//* 누적액 총합계 구하기
+
 		totalLab = new JLabel();
 		totalLab.setText("총 실판매금액: " + total);
 		p3.add(totalLab);
 
-		// table center align
+		// 테이블 가운데 정렬
 		DefaultTableCellRenderer tCellRenderer = new DefaultTableCellRenderer();
 		tCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -113,27 +121,20 @@ public class SalesStatus extends JPanel implements ActionListener{
 		for (int i = 0; i < t1ColModel.getColumnCount(); i++)
 			t1ColModel.getColumn(i).setCellRenderer(tCellRenderer);
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		String year = (String)yearComboBox.getSelectedItem();
-		String month = (String)monthComboBox.getSelectedItem();
-		String date = year.substring(2) + month;
-		
-		if(e.getSource() == btnSearch) {
+		String year = (String) yearComboBox.getSelectedItem();
+		String month = (String) monthComboBox.getSelectedItem();
+		String selectedDate = year.substring(2) + month;
+
+		if (e.getSource() == btnSearch) {
 			myDBcon.clear(firstTab);
-			myDBcon.searchStatus(firstTab, date);
+			
+			myDBcon.searchStatus(firstTab, selectedDate); // 선택한 월의 날짜별 데이터 조회 메서드
+			
 			total = myDBcon.getMonthTotalPrice().toString();
 			totalLab.setText("총 실판매금액: " + total);
-			
-			// 테이블 클릭 시 이벤트
-			firstTab.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					int row = firstTab.getSelectedRow();
-					Object selectedDate = firstTabModel.getValueAt(row,0);
-					OpenStatus op = new OpenStatus(myDBcon,selectedDate);
-				}
-			});			
-		}
-	}	
+		}		
+	}
 }
