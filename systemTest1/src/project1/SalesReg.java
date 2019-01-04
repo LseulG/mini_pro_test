@@ -1,4 +1,12 @@
 package project1;
+
+/*
+ * (매장) 판매관리 - 판매등록
+ * 
+ * 상품을 조회하여 판매 내용을 등록 혹은 삭제 할 수 있다.
+ * 
+ */
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -6,6 +14,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.util.regex.Pattern;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -21,13 +30,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
-/*
- * 매장 메뉴
- * 판매관리 - 판매등록
- * 
- * 삭제 시 총 합계 수정 안됨....
- */
-
 public class SalesReg extends JPanel implements ActionListener{
 	private DefaultTableModel firstTableModel, secTableModel;	
 	private JTable firstTable, secTable;	
@@ -41,9 +43,10 @@ public class SalesReg extends JPanel implements ActionListener{
 	
 	private DBcon myDBcon;
 	
-	String divComboList[] = {"판매","반품"};
-	String sizeComboList[] = {"S","M","L","XL"};	
-	//LocalDate currDate = LocalDate.now(); 오늘 날짜
+	String divComboArray[] = {"판매","반품"};
+	String sizeComboArray[] = {"S","M","L","XL"};	
+	
+	//LocalDate currDate = LocalDate.now(); //오늘 날짜
 	LocalDate currDate = LocalDate.of(2018, 11, 1);
 	
 	String code = null;
@@ -90,7 +93,7 @@ public class SalesReg extends JPanel implements ActionListener{
 		
 			// 1행 - 상품 조회
 		divLabel = new JLabel(" 구분");		p2.add(divLabel);		
-		divCombo = new JComboBox<String>(divComboList);
+		divCombo = new JComboBox<String>(divComboArray);
 		p2.add(divCombo);
 		
 		noLabel = new JLabel(" 품번");	p2.add(noLabel);		
@@ -103,7 +106,7 @@ public class SalesReg extends JPanel implements ActionListener{
 		p2.add(colorCombo);
 		
 		sizeLabel = new JLabel(" 사이즈");	p2.add(sizeLabel);		
-		sizeCombo = new JComboBox<String>(sizeComboList);
+		sizeCombo = new JComboBox<String>(sizeComboArray);
 		p2.add(sizeCombo);
 		
 		searchButton = new JButton("조회");
@@ -133,7 +136,7 @@ public class SalesReg extends JPanel implements ActionListener{
 		registrationButton.addActionListener(this);
 		p2.add(registrationButton);
 				
-		// 4 - 클릭해서 삭제	
+		// 4 - 판매 등록 현황 테이블
 		String secTabName[] = { "번호", "구분", "품번", "색상", "사이즈", "판매단가", "수량", "실판매금액"};
 		Object secData[][] = new Object[0][8];
 		secTableModel = new DefaultTableModel(secData, secTabName){
@@ -154,6 +157,7 @@ public class SalesReg extends JPanel implements ActionListener{
 		DefaultTableModel newModel = (DefaultTableModel) firstTable.getModel();
 		newModel.addRow(newData);
 		
+			// 등록 삭제
 		JPanel p3 = new JPanel();
 		add(p3);		
 		deleteButton = new JButton("삭제");
@@ -171,6 +175,25 @@ public class SalesReg extends JPanel implements ActionListener{
 			t1ColModel.getColumn(i).setCellRenderer(tCellRenderer);
 		for (int i = 0; i < t2ColModel.getColumnCount(); i++)
 			t2ColModel.getColumn(i).setCellRenderer(tCellRenderer);
+	}
+	
+	// 판매수량, 실판매가 숫자인지 체크
+	public boolean numberCheck(String salesQuantity, String salesPrice) {
+		boolean checkResult = false;
+		String regularEx = "[1-9]\\d*"; // 정규표현식 - 0이 아닌 숫자
+
+		boolean salesQuantityCheck = Pattern.matches(regularEx, salesQuantity);
+		boolean salesPriceCheck = Pattern.matches(regularEx, salesPrice);
+
+		if (salesQuantityCheck && salesPriceCheck) {
+			// 둘 다 맞는 숫자
+			checkResult = true;
+		} else {
+			// 0으로 시작하거나 숫자가 아닐 경우
+			checkResult = false;
+		}
+
+		return checkResult;
 	}
 
 	@Override
@@ -203,8 +226,6 @@ public class SalesReg extends JPanel implements ActionListener{
 			if(productPrice.equals("0")) {
 				// 조회한 상품이 없을 경우
 				JOptionPane.showMessageDialog(null, "상품 조회 후 등록이 가능합니다.");
-			} else if (salesQuantity.equals("0")){
-				JOptionPane.showMessageDialog(null, "상품 조회 후 등록이 가능합니다.");
 			} else {
 				// 조회한 상품이 있을 경우
 				myDBcon.clear(secTable);
@@ -213,6 +234,10 @@ public class SalesReg extends JPanel implements ActionListener{
 				
 				if(productPrice.equals("0")) {
 					// 등록 상품 정보가 수정되어 상품을 찾을 수 없을 경우 - 테이블만 보여주기
+					myDBcon.searchSalesStatus(secTable, currDate); // 판매현황 테이블 
+				} else if (numberCheck(salesQuantity, salesPrice) == false){
+					// 수량 혹은 실판매가가 0으로 시작하거나 숫자가 아닐 경우
+					JOptionPane.showMessageDialog(null, "수량, 실판매가를 확인하세요");
 					myDBcon.searchSalesStatus(secTable, currDate); // 판매현황 테이블 
 				} else {
 					// 등록 가능
@@ -235,7 +260,7 @@ public class SalesReg extends JPanel implements ActionListener{
 		if (e.getSource() == deleteButton) {
 			int row = secTable.getSelectedRow(); // 선택한 행 가져오기
 			
-			if(secTable.getSelectedRow() > 0) {
+			if(secTable.getSelectedRow() >= 0) {
 				// 선택한 행이 있을 경우
 				String deleteSalesNum = (String) secTableModel.getValueAt(row,0);
 				int deleteSalesPrice = (int) secTableModel.getValueAt(row,7);

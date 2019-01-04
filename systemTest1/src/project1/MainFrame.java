@@ -1,4 +1,5 @@
 package project1;
+
 /*
  * 메인창
  * 
@@ -6,7 +7,12 @@ package project1;
  * 카드 레이아웃으로 각각의 메뉴들을 카드에 올려 호출
  * 창닫기 혹은 로그아웃 시 DB 연결이 해제
  * 
+ * 메뉴는 매장과 본사에 따라 다르게 나타남
+ * 매장 - 판매관리(판매등록,판매현황) 재고관리(재고조회) 로그아웃
+ * 본사 - 재고관리(재고 등록/수정, 재고조회) 관리자메뉴(신상품등록, 상품단가 수정, 계정 생성/조회) 로그아웃
+ * 
  */
+
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

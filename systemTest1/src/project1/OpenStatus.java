@@ -1,5 +1,12 @@
 package project1;
 
+/*
+ * (매장) 판매관리 - 판매현황 - 일판매현황
+ * 
+ * 판매현황에서 선택한 일자의 일판매현황을 팝업창으로 보여준다.
+ * 
+ */
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
@@ -16,7 +23,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
 public class OpenStatus extends JDialog {
-
 	private final JPanel contentPanel = new JPanel();
 	DefaultTableModel firstTabModel, secTabModel;
 	JTable firstTab, secTab;
@@ -37,7 +43,7 @@ public class OpenStatus extends JDialog {
 			
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		{
-			// 1
+			// 1 - 판매일자, 총판매금액
 			String firstTabName[] = { "판매일자", "총판매금액" };
 			Object firstData[][] = { { selectedDate, "20,000" } };
 			firstTabModel = new DefaultTableModel(firstData, firstTabName){
@@ -52,7 +58,7 @@ public class OpenStatus extends JDialog {
 			firstSc.setPreferredSize(new Dimension(450, 80));
 			contentPanel.add(firstSc);			
 			
-			// 2
+			// 2 - 판매 현황 테이블
 			String secTabName[] = { "번호", "구분", "품번", "색상", "사이즈", "판매단가", "수량", "실판매금액"};
 			Object secData[][] = new Object[0][8];
 			secTabModel = new DefaultTableModel(secData, secTabName){
