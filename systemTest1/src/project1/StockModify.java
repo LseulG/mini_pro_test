@@ -2,198 +2,143 @@ package project1;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 
 import java.awt.Color;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import java.awt.GridLayout;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.Font;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
 
-public class StockModify extends JPanel{
-	private JTextField ProNoTextField_1;
-	private JTextField OriTextField;
-	private JTextField ChangeTextField;
+public class StockModify extends JPanel {
 	private JTextField ProNoTextField_2;
 
+	private DBcon myDBcon;
 	private JTextField S_Size_Field;
 	private JTextField M_Size_Field;
 	private JTextField L_Size_Field;
 	private JTextField XL_Size_Field;
-
-	private DBcon myDBcon;
 	
 	private void setDBcon(DBcon dbcon) {
 		myDBcon = dbcon;
 	}
-	
+
 	public StockModify(DBcon dbcon) {
 		setDBcon(dbcon);
 		setLayout(null);
 
-		JLabel Title = new JLabel("상품정보 수정");
+		JLabel Title = new JLabel("재고 관리");
 		Title.setFont(new Font("굴림", Font.BOLD, 20));
 		Title.setBounds(12, 10, 201, 26);
 		add(Title);
 
-		TitledBorder Tb1 = new TitledBorder(new LineBorder(Color.black), "단가수정");
-		Tb1.setTitleColor(Color.black);
-
-		JPanel p1 = new JPanel();
-		p1.setBounds(12, 46, 540, 113);
-		add(p1);
-		p1.setLayout(null);
-		p1.setBorder(Tb1);
-
-		JLabel ProNoLabel_1 = new JLabel("품번 :");
-		ProNoLabel_1.setBounds(12, 31, 57, 16);
-		ProNoLabel_1.setFont(new Font("굴림", Font.BOLD, 13));
-		ProNoLabel_1.setHorizontalAlignment(SwingConstants.LEFT);
-		p1.add(ProNoLabel_1);
-
-		ProNoTextField_1 = new JTextField();
-		ProNoTextField_1.setBounds(59, 27, 109, 26);
-		p1.add(ProNoTextField_1);
-		ProNoTextField_1.setColumns(10);
-
-		JLabel OriPriceLabel = new JLabel("기존 판매단가 :");
-		OriPriceLabel.setBounds(12, 57, 100, 36);
-		p1.add(OriPriceLabel);
-		OriPriceLabel.setFont(new Font("굴림", Font.BOLD, 13));
-
-		OriTextField = new JTextField();
-		OriTextField.setBounds(118, 63, 109, 26);
-		p1.add(OriTextField);
-		OriTextField.setColumns(10);
-		OriTextField.setEditable(false);
-
-		JButton SearchButton = new JButton("조회");
-		SearchButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				String price = "0";
-				myDBcon.searchProduct(ProNoTextField_1.getText());
-				price = myDBcon.getProductPrice().toString();
-				OriTextField.setText(price);
-			}
-
-		});
-		SearchButton.setBounds(180, 27, 70, 25);
-		p1.add(SearchButton);
-
-		JLabel ChangePriceLabel = new JLabel("변경 판매단가 :");
-		ChangePriceLabel.setBounds(237, 57, 100, 36);
-		p1.add(ChangePriceLabel);
-		ChangePriceLabel.setFont(new Font("굴림", Font.BOLD, 13));
-		ChangePriceLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-		ChangeTextField = new JTextField();
-		ChangeTextField.setBounds(338, 63, 109, 26);
-		p1.add(ChangeTextField);
-		ChangeTextField.setColumns(10);
-
-		JButton OkButton = new JButton("확인");
-		OkButton.setBounds(458, 63, 70, 25);
-		p1.add(OkButton);
-		OkButton.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent arg0) {
-				String c_price =ChangeTextField.getText();
-				String p_no = ProNoTextField_1.getText();
-				myDBcon.updatePrice(c_price, p_no);
-				
-			}
-		});
-		OkButton.setFont(new Font("굴림", Font.PLAIN, 12));
-
-		TitledBorder Tb2 = new TitledBorder(new LineBorder(Color.black), "재고 등록 / 수정");
+		TitledBorder Tb2 = new TitledBorder(new LineBorder(Color.black), "재고수정");
 		Tb2.setTitleColor(Color.black);
 
 		JPanel p2 = new JPanel();
-		p2.setBounds(12, 169, 540, 205);
+		p2.setBounds(12, 53, 540, 314);
 
 		add(p2);
 		p2.setLayout(null);
 		p2.setBorder(Tb2);
 
 		JLabel StoreLabel = new JLabel("매장 :");
-		StoreLabel.setBounds(11, 26, 54, 36);
+		StoreLabel.setBounds(11, 39, 54, 36);
 		StoreLabel.setFont(new Font("굴림", Font.BOLD, 13));
 		p2.add(StoreLabel);
 
 		JComboBox StoreComboBox = new JComboBox();
-		StoreComboBox.setBounds(67, 31, 148, 26);
+		StoreComboBox.setBounds(67, 44, 148, 26);
 		StoreComboBox.setFont(new Font("굴림", Font.PLAIN, 13));
 		StoreComboBox.setMaximumRowCount(100);
 		p2.add(StoreComboBox);
 		myDBcon.getStoreNameCombobox(StoreComboBox);
 		
 		JLabel ProNoLabel_2 = new JLabel("품번 :");
-		ProNoLabel_2.setBounds(239, 26, 59, 36);
+		ProNoLabel_2.setBounds(239, 39, 59, 36);
 		ProNoLabel_2.setFont(new Font("굴림", Font.BOLD, 13));
 		p2.add(ProNoLabel_2);
 
 		ProNoTextField_2 = new JTextField();
 		ProNoTextField_2.setColumns(10);
-		ProNoTextField_2.setBounds(290, 32, 109, 26);
+		ProNoTextField_2.setBounds(289, 45, 109, 26);
 		p2.add(ProNoTextField_2);
 		
 		JComboBox ColorComboBox = new JComboBox();
-		ColorComboBox.setBounds(67, 77, 105, 26);
+		ColorComboBox.setBounds(67, 104, 105, 26);
 		p2.add(ColorComboBox);
 		ColorComboBox.setMaximumRowCount(100);
 		ColorComboBox.setFont(new Font("굴림", Font.PLAIN, 13));
 		
-		
 
-		JButton SearchButton_2 = new JButton("조회");
-		SearchButton_2.addActionListener(new ActionListener() {
+		JButton SearchColorBtn = new JButton("색상 조회");
+		SearchColorBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ColorComboBox.removeAllItems();
+				S_Size_Field.setText(null);
+				M_Size_Field.setText(null);
+				L_Size_Field.setText(null);
+				XL_Size_Field.setText(null);
 				String p_no = ProNoTextField_2.getText();
-				myDBcon.searchStock(ColorComboBox, StoreComboBox, p_no);
-
+				myDBcon.searchStockColor(ColorComboBox, StoreComboBox, p_no);
 			}
 		});
-		
-
-		
-		SearchButton_2.setFont(new Font("굴림", Font.PLAIN, 12));
-		SearchButton_2.setBounds(411, 32, 70, 25);
-		p2.add(SearchButton_2);
+		SearchColorBtn.setFont(new Font("굴림", Font.PLAIN, 12));
+		SearchColorBtn.setBounds(406, 45, 111, 25);
+		p2.add(SearchColorBtn);
 
 		JLabel ColorLabel = new JLabel("색상 :");
-		ColorLabel.setBounds(11, 72, 54, 36);
+		ColorLabel.setBounds(11, 99, 54, 36);
 		p2.add(ColorLabel);
 		ColorLabel.setFont(new Font("굴림", Font.BOLD, 13));
+	
+		JButton SearchSizeBtn = new JButton("재고 조회");
+		SearchSizeBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String qty = "0";
+				String s_name = StoreComboBox.getSelectedItem().toString();
+				String p_no = ProNoTextField_2.getText();
+				String p_color = ColorComboBox.getSelectedItem().toString();
+				
+				
+				myDBcon.searchSize(s_name, p_no, p_color, "S");
+				qty = myDBcon.getStockQuantity().toString();
+				S_Size_Field.setText(qty);
+				
+				myDBcon.searchSize(s_name, p_no, p_color, "M");
+				qty = myDBcon.getStockQuantity().toString();
+				M_Size_Field.setText(qty);
+
+				myDBcon.searchSize(s_name, p_no, p_color, "L");
+				qty = myDBcon.getStockQuantity().toString();
+				L_Size_Field.setText(qty);
+				
+				myDBcon.searchSize(s_name, p_no, p_color, "XL");
+				qty = myDBcon.getStockQuantity().toString();
+				XL_Size_Field.setText(qty);
+	
+			}
+		});
+		SearchSizeBtn.setFont(new Font("굴림", Font.PLAIN, 12));
+		SearchSizeBtn.setBounds(196, 105, 102, 25);
+		p2.add(SearchSizeBtn);
 
 
 		JLabel SizeLabel = new JLabel("사이즈 :");
-		SizeLabel.setBounds(11, 118, 67, 26);
+		SizeLabel.setBounds(11, 169, 79, 26);
 		p2.add(SizeLabel);
 		SizeLabel.setFont(new Font("굴림", Font.BOLD, 13));
 
 
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(67, 118, 359, 65);
+		panel.setBounds(42, 205, 384, 75);
 		p2.add(panel);
 		panel.setLayout(new GridLayout(0, 4, 0, 0));
 		
@@ -246,15 +191,24 @@ public class StockModify extends JPanel{
 		XL_Size_Field.setColumns(10);
 		
 		
-		JButton button = new JButton("확인");
-		button.setBounds(452, 118, 70, 36);
-		p2.add(button);
-		button.addActionListener(new ActionListener() {
+		JButton UpdateStockBtn = new JButton("확인");
+		UpdateStockBtn.setBounds(438, 215, 79, 55);
+		p2.add(UpdateStockBtn);
+		UpdateStockBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
+				String c_stock = S_Size_Field.getText();
+				String s_name = StoreComboBox.getSelectedItem().toString();
+				String p_no = ProNoTextField_2.getText();
+				String p_color = ColorComboBox.getSelectedItem().toString();
+
+				myDBcon.updateStock(c_stock, s_name, p_no, p_color);
+
 			}
 		});
-		button.setFont(new Font("굴림", Font.PLAIN, 12));
+		UpdateStockBtn.setFont(new Font("굴림", Font.PLAIN, 12));
+		
+
 
 	}
 }
