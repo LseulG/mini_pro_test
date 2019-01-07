@@ -1,5 +1,8 @@
 package project1;
 
+import java.awt.Color;
+import java.awt.Component;
+
 /*
  * (매장,본사) 재고관리 - 재고조회
  * 
@@ -19,6 +22,7 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -31,15 +35,16 @@ public class StockSearch extends JPanel implements ActionListener {
 	private JButton searchButton;
 	private JLabel titleLabel, productNoLabel, priceLabel, productPriceLabel;
 	private JTextField productNoField;
-	
+
 	private DBcon myDBcon;
-	
+
 	String productPrice = "0";
-	
+	String loginUser;
+
 	private void setDBcon(DBcon dbcon) {
 		myDBcon = dbcon;
 	}
-	
+
 	public StockSearch(DBcon dbcon) {
 		setDBcon(dbcon);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -70,9 +75,9 @@ public class StockSearch extends JPanel implements ActionListener {
 		searchButton = new JButton("조회");
 		searchButton.addActionListener(this);
 		p2.add(searchButton);
-		
+
 		priceLabel = new JLabel(" 판매단가 : ");
-		p2.add(priceLabel);		
+		p2.add(priceLabel);
 		productPriceLabel = new JLabel(productPrice);
 		p2.add(productPriceLabel);
 
@@ -85,12 +90,27 @@ public class StockSearch extends JPanel implements ActionListener {
 		// 4 - 재고 조회 테이블
 		String firstTabName[] = { "색상", "사이즈", "매장코드", "매장명", "전화번호", "재고" };
 		Object firstData[][] = new Object[0][6];
-		firstTabModel = new DefaultTableModel(firstData, firstTabName){
+		firstTabModel = new DefaultTableModel(firstData, firstTabName) {
 			public boolean isCellEditable(int row, int col) {
 				return false; // 테이블 수정 못하게
 			}
 		};
-		firstTab = new JTable(firstTabModel);
+		firstTab = new JTable(firstTabModel) {
+			// 특정 행의 글자 색상 변경
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+				Component compo = super.prepareRenderer(renderer, row, column);
+
+				String type = (String) getModel().getValueAt(row, 2);
+				if (type.equalsIgnoreCase(loginUser)) {
+					// 매장코드가 로그인 매장일 경우
+					compo.setForeground(Color.BLUE);
+				} else {
+					compo.setForeground(Color.DARK_GRAY);
+				}
+				return compo;
+			}
+		};
 		firstTab.getTableHeader().setReorderingAllowed(false); // 테이블 열 고정
 		firstSc = new JScrollPane(firstTab);
 		add(firstSc);
@@ -110,10 +130,11 @@ public class StockSearch extends JPanel implements ActionListener {
 		// 조회 버튼 action
 		if (e.getSource() == searchButton) {
 			String productNo = productNoField.getText();
-			
+
 			myDBcon.clear(firstTab);
-			myDBcon.searchStock(firstTab,productNo);
+			myDBcon.searchStock(firstTab, productNo);
 			productPrice = myDBcon.getProductPrice().toString();
+			loginUser = myDBcon.getLoginUser();
 			productPriceLabel.setText(productPrice);
 		}
 	}
