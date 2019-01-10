@@ -2,6 +2,7 @@ package project1;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
@@ -11,15 +12,16 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.util.regex.Pattern;
 import java.awt.event.ActionEvent;
 
 public class ProdInfoModify extends JPanel {
-	private JTextField ProNoTextField_1;
-	private JTextField OriTextField;
-	private JTextField ChangeTextField;
+	private JTextField productNoField;
+	private JTextField originalPriceField;
+	private JTextField priceModifyField;
 
 	private DBcon myDBcon;
-	
+
 	private void setDBcon(DBcon dbcon) {
 		myDBcon = dbcon;
 	}
@@ -28,82 +30,104 @@ public class ProdInfoModify extends JPanel {
 		setDBcon(dbcon);
 		setLayout(null);
 
-		JLabel Title = new JLabel("상품정보 수정");
+		JLabel Title = new JLabel("상품단가 수정");
 		Title.setFont(new Font("굴림", Font.BOLD, 20));
 		Title.setBounds(12, 10, 201, 26);
 		add(Title);
 
-		TitledBorder Tb1 = new TitledBorder(new LineBorder(Color.black), "단가수정");
-		Tb1.setTitleColor(Color.black);
+		TitledBorder Tb = new TitledBorder(new LineBorder(Color.black), "단가수정");
+		Tb.setTitleColor(Color.black);
 
-		JPanel p1 = new JPanel();
-		p1.setBounds(12, 46, 540, 254);
-		add(p1);
-		p1.setLayout(null);
-		p1.setBorder(Tb1);
+		JPanel priceModifyPanel = new JPanel();
+		priceModifyPanel.setBounds(12, 50, 500, 300);
+		add(priceModifyPanel);
+		priceModifyPanel.setLayout(null);
+		priceModifyPanel.setBorder(Tb);
 
-		JLabel ProNoLabel_1 = new JLabel("품번 :");
-		ProNoLabel_1.setBounds(12, 31, 57, 16);
-		ProNoLabel_1.setFont(new Font("굴림", Font.BOLD, 13));
-		ProNoLabel_1.setHorizontalAlignment(SwingConstants.LEFT);
-		p1.add(ProNoLabel_1);
+		JLabel productNoLabel = new JLabel("품번 :");
+		productNoLabel.setBounds(12, 56, 94, 30);
+		productNoLabel.setFont(new Font("굴림", Font.BOLD, 13));
+		productNoLabel.setHorizontalAlignment(SwingConstants.LEFT);
+		priceModifyPanel.add(productNoLabel);
 
-		ProNoTextField_1 = new JTextField();
-		ProNoTextField_1.setBounds(59, 27, 109, 26);
-		p1.add(ProNoTextField_1);
-		ProNoTextField_1.setColumns(10);
+		productNoField = new JTextField();
+		productNoField.setBounds(64, 56, 163, 30);
+		priceModifyPanel.add(productNoField);
+		productNoField.setColumns(10);
 
-		JLabel OriPriceLabel = new JLabel("기존 판매단가 :");
-		OriPriceLabel.setBounds(12, 85, 100, 36);
-		p1.add(OriPriceLabel);
-		OriPriceLabel.setFont(new Font("굴림", Font.BOLD, 13));
+		JLabel originalPriceLabel = new JLabel("기존 판매단가 :");
+		originalPriceLabel.setBounds(12, 130, 100, 30);
+		priceModifyPanel.add(originalPriceLabel);
+		originalPriceLabel.setFont(new Font("굴림", Font.BOLD, 13));
 
-		OriTextField = new JTextField();
-		OriTextField.setBounds(118, 91, 109, 26);
-		p1.add(OriTextField);
-		OriTextField.setColumns(10);
-		OriTextField.setEditable(false);
+		originalPriceField = new JTextField();
+		originalPriceField.setBounds(118, 130, 148, 30);
+		priceModifyPanel.add(originalPriceField);
+		originalPriceField.setColumns(10);
+		originalPriceField.setEditable(false);
 
-		JButton SearchButton = new JButton("조회");
-		SearchButton.addActionListener(new ActionListener() {
+		JButton searchButton = new JButton("조회");
+		searchButton.setFont(new Font("굴림", Font.PLAIN, 12));
+		searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String price = "0";
-				myDBcon.searchProduct(ProNoTextField_1.getText());
-				price = myDBcon.getProductPrice().toString();
-				OriTextField.setText(price);
+				String price;
+				String productNo = productNoField.getText();
+				if (productNo.isEmpty()) { // 품번이 공백이면
+					JOptionPane.showMessageDialog(null, "품번을 입력해주세요.");
+				} else { // 품번이 공백이 아니면 그 품번 조회
+					myDBcon.searchProduct(productNo);
+					price = myDBcon.getProductPrice().toString();
+					originalPriceField.setText(price);
+				}
 			}
 
 		});
-		SearchButton.setBounds(180, 27, 70, 25);
-		p1.add(SearchButton);
+		searchButton.setBounds(252, 56, 83, 30);
+		priceModifyPanel.add(searchButton);
 
-		JLabel ChangePriceLabel = new JLabel("변경 판매단가 :");
-		ChangePriceLabel.setBounds(12, 143, 100, 36);
-		p1.add(ChangePriceLabel);
-		ChangePriceLabel.setFont(new Font("굴림", Font.BOLD, 13));
-		ChangePriceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		JLabel priceModifyLabel = new JLabel("변경 판매단가 :");
+		priceModifyLabel.setBounds(12, 200, 100, 30);
+		priceModifyPanel.add(priceModifyLabel);
+		priceModifyLabel.setFont(new Font("굴림", Font.BOLD, 13));
+		priceModifyLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-		ChangeTextField = new JTextField();
-		ChangeTextField.setBounds(118, 149, 109, 26);
-		p1.add(ChangeTextField);
-		ChangeTextField.setColumns(10);
+		priceModifyField = new JTextField();
+		priceModifyField.setBounds(118, 200, 148, 30);
+		priceModifyPanel.add(priceModifyField);
+		priceModifyField.setColumns(10);
 
-		JButton OkButton = new JButton("확인");
-		OkButton.setBounds(252, 134, 83, 54);
-		p1.add(OkButton);
-		OkButton.addActionListener(new ActionListener() {
+		JButton updateButton = new JButton("확인");
+		updateButton.setBounds(300, 200, 83, 30);
+		priceModifyPanel.add(updateButton);
+		updateButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-				String c_price =ChangeTextField.getText();
-				String p_no = ProNoTextField_1.getText();
-				myDBcon.updatePrice(c_price, p_no);
-				
+				String originalPrice = originalPriceField.getText();
+				String priceModify = priceModifyField.getText();
+				String productNo = productNoField.getText();
+
+				String checkProductNo = "^[1-9]\\d*"; // 변경가격은 숫자만 입력가능하게!(시작숫자 0은불가)
+
+				boolean isProductPrice = Pattern.matches(checkProductNo, priceModify);
+
+				if (originalPrice.isEmpty()) { // 조회한 품번 가격이 공백이면
+					JOptionPane.showMessageDialog(null, "변경할 품번을 먼저 조회해주세요.");
+				} else { // 조회는 하였으나
+					if (priceModify.isEmpty()) { // 변경할려고 하는 가격이 공백이면
+						JOptionPane.showMessageDialog(null, "변경할 가격을 입력해주세요.");
+					} else if (isProductPrice == false) {
+						JOptionPane.showMessageDialog(null, "가격은 숫자로 입력해주세요.");
+					} else {
+						myDBcon.updatePrice(priceModify, productNo);
+						originalPriceField.setText(null);
+						priceModifyField.setText(null);
+						productNoField.setText(null);
+					}
+				}
+
 			}
 		});
-		OkButton.setFont(new Font("굴림", Font.PLAIN, 12));
-
-		TitledBorder Tb2 = new TitledBorder(new LineBorder(Color.black), "재고 등록 / 수정");
-		Tb2.setTitleColor(Color.black);
+		updateButton.setFont(new Font("굴림", Font.PLAIN, 12));
 
 	}
 }
